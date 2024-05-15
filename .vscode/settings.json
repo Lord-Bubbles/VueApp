@@ -1,0 +1,21 @@
+{
+    "prettier.vueIndentScriptAndStyle": true,
+    "prettier.useTabs": true,
+    "vetur.validation.template": false,
+    "vetur.validation.style": false,
+    "vetur.validation.interpolation": false,
+    "vetur.format.styleInitialIndent": true,
+    "vetur.format.scriptInitialIndent": true,
+    "vetur.format.defaultFormatterOptions": {
+
+        "js-beautify-html": {
+            "wrap_attributes": "force-expand-multiline"
+        },
+        "prettyhtml": {
+            "printWidth": 100,
+            "singleQuote": false,
+            "wrapAttributes": false,
+            "sortAttributes": false
+        }
+    }
+}
