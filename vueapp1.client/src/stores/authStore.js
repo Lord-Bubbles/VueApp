@@ -2,9 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useAuthStore = defineStore('authStore', () => {
-  const userProfile = ref(
-    localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
-  );
+  const userProfile = ref(JSON.parse(localStorage.getItem('user')));
 
   function updateUser(user) {
     userProfile.value = user;
