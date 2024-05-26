@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import MyProfile from '../components/MyProfile.vue';
-import PerformancePage from '../components/PerformancePage.vue';
-import LoginView from '../views/LoginView.vue';
-import SignupView from '../views/SignupView.vue';
-import AdminPage from '../components/AdminPage.vue';
-import ManagerPage from '../components/ManagerPage.vue';
+import HomeView from '@/views/HomeView.vue';
+import MyProfile from '@/components/MyProfile.vue';
+import PerformancePage from '@/components/PerformancePage.vue';
+import LoginView from '@/views/LoginView.vue';
+import SignupView from '@/views/SignupView.vue';
+import AdminPage from '@/components/AdminPage.vue';
+import ManagerPage from '@/components/ManagerPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
