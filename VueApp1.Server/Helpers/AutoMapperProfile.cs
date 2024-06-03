@@ -1,15 +1,15 @@
 namespace VueApp1.Server.Helpers;
 
 using AutoMapper;
-using VueApp1.Server.Models;
+using VueApp1.Server.Models.Entities;
 
 public class AutoMapperProfile : Profile
 {
   public AutoMapperProfile()
   {
-    CreateMap<User, AuthenticateResponse>();
+    CreateMap<RegisterRequest, User>();
 
-    CreateMap<User, UserView>();
+    CreateMap<User, UserView>().ForMember(dest => dest.AccountType, opt => opt.MapFrom(src => Enum.GetName(src.AccountType)));
 
     CreateMap<UpdateRequest, User>()
         .ForAllMembers(x => x.Condition((src, dest, prop) =>
