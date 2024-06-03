@@ -31,28 +31,6 @@ public class Program
     builder.Services.AddSwaggerGen(option =>
     {
       option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
-      option.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
-      {
-        In = ParameterLocation.Header,
-        Description = "Please enter username and password",
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Basic"
-      });
-      option.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type=ReferenceType.SecurityScheme,
-                            Id="Basic"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-        });
       option.AddSecurityDefinition("JWT", new OpenApiSecurityScheme()
       {
         In = ParameterLocation.Header,
