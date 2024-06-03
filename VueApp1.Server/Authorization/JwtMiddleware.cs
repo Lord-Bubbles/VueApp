@@ -2,19 +2,14 @@ namespace VueApp1.Server.Authorization;
 
 using VueApp1.Server.Services;
 
-public class JwtMiddleware
+public class JwtMiddleware(RequestDelegate next)
 {
-  private readonly RequestDelegate _next;
-
-  public JwtMiddleware(RequestDelegate next)
-  {
-    _next = next;
-  }
+  private readonly RequestDelegate _next = next;
 
   public async Task Invoke(HttpContext context, IUserRepository userRepository, IJwtUtils jwtUtils)
   {
     var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-    var userID = jwtUtils.ValidateToken(token);
+    var userID = jwtUtils.ValidateAccessToken(token);
     if (userID > 0)
     {
       context.Items["User"] = await userRepository.GetByIdAsync(userID);
