@@ -1,5 +1,5 @@
 using VueApp1.Server.Helpers;
-using VueApp1.Server.Models;
+using VueApp1.Server.Models.Entities;
 
 namespace VueApp1.Server.Services;
 
@@ -7,25 +7,19 @@ public interface IPerformanceRepository
 {
     (IEnumerable<Performance>, int) GetAll(PerformanceParameters query);
     Task<Performance> GetByIdAsync(int id);
-    Task<Performance> CreateAsync(Performance entity);
+    Task CreateAsync(Performance entity);
     Task UpdateAsync(int id, Performance entity);
     Task DeleteAsync(int id);
 }
 
-public class PerformanceRepository : IPerformanceRepository
+public class PerformanceRepository(AppDbContext context) : IPerformanceRepository
 {
-    protected readonly AppDbContext context;
+    protected readonly AppDbContext context = context;
 
-    public PerformanceRepository(AppDbContext context)
-    {
-        this.context = context;
-    }
-
-    public async Task<Performance> CreateAsync(Performance entity)
+    public async Task CreateAsync(Performance entity)
     {
         await context.Performances.AddAsync(entity);
         context.SaveChanges();
-        return entity;
     }
 
     public Task DeleteAsync(int id)

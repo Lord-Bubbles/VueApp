@@ -2,155 +2,137 @@ namespace VueApp1.Server.Services;
 
 using Microsoft.EntityFrameworkCore;
 using VueApp1.Server.Helpers;
-using VueApp1.Server.Models;
+using VueApp1.Server.Models.Entities;
 using BCrypt.Net;
-using System.Text;
 using VueApp1.Server.Authorization;
 using AutoMapper;
+using System.Data;
+using VueApp1.Server.Models.Enums;
 
 public interface IUserRepository
 {
-  (IEnumerable<UserView>, int) GetAll(UserParameters query);
-  Task<UserView> GetByIdAsync(int id);
-  Task UpdateAsync(int id, UpdateRequest entity);
-  Task DeleteAsync(int id);
-  Task<User> CreateAccount(AccountInfo info);
-  Task<AuthenticateResponse> Login(string authorization);
+    (IEnumerable<UserView>, int) GetAll(UserParameters query);
+    Task<User?> GetByIdAsync(int id);
+    Task UpdateAsync(int id, UpdateRequest entity);
+    Task DeleteAsync(int id);
+    Task CreateUserAsync(RegisterRequest info);
+    Task<AuthenticateResponse> LoginAsync(LoginRequest user);
+    Task<User?> GetByTokenAsync(string token);
+    void Logout(User user);
+    AuthenticateResponse GenerateTokens(User user);
 }
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper mapper) : IUserRepository
 {
-  protected readonly AppDbContext context;
+    protected readonly AppDbContext context = context;
 
-  protected readonly IJwtUtils jwtUtils;
+    protected readonly IJwtUtils jwtUtils = jwtUtils;
 
-  protected readonly IMapper mapper;
+    protected readonly IMapper mapper = mapper;
 
-  public UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper mapper)
-  {
-    this.context = context;
-    this.jwtUtils = jwtUtils;
-    this.mapper = mapper;
-  }
-
-  public async Task DeleteAsync(int id)
-  {
-    var user = await context.Users.FindAsync(id) ?? throw new Exception("User not found!");
-    context.Users.Remove(user);
-    context.SaveChanges();
-  }
-
-  public (IEnumerable<UserView>, int) GetAll(UserParameters query)
-  {
-    if (query.Page <= 0 || query.Limit <= 0)
+    public async Task DeleteAsync(int id)
     {
-      throw new Exception("Error: page and limit query parameters not valid!");
-    }
-    var filter = context.Users.Select(u => mapper.Map<UserView>(u));
-    if (!string.IsNullOrEmpty(query.Type))
-    {
-      filter = filter.Where(u => u.AccountType == query.Type);
-    }
-    if (!string.IsNullOrEmpty(query.Name))
-    {
-      filter = filter.Where(u => u.FirstName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase) || u.LastName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase));
-    }
-    if (query.MinAge > 0 && query.MinAge <= query.MaxAge)
-    {
-      filter = filter.Where(u => u.Age >= query.MinAge);
-    }
-    if (query.MaxAge > 0 && query.MaxAge >= query.MinAge)
-    {
-      filter = filter.Where(u => u.Age <= query.MaxAge);
-    }
-    if (!string.IsNullOrEmpty(query.ManagerName))
-    {
-      filter = filter.Where(u => u.ManagerName == query.ManagerName);
-    }
-    return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList(), filter.Count());
-  }
-
-  public async Task<UserView> GetByIdAsync(int id)
-  {
-    var user = await context.Users.FindAsync(id);
-    return mapper.Map<UserView>(user) ?? throw new Exception("User not found!");
-  }
-
-  public async Task UpdateAsync(int id, UpdateRequest entity)
-  {
-    var user = await context.Users.FindAsync(id) ?? throw new Exception("User not found!");
-
-    if (!string.IsNullOrEmpty(entity.Password))
-    {
-      user.HashPassword = BCrypt.HashPassword(entity.Password, BCrypt.GenerateSalt(13), true);
+        var user = await context.Users.FindAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
+        context.Users.Remove(user);
+        context.SaveChanges();
     }
 
-    if (!string.IsNullOrEmpty(entity.AccountType))
+    public (IEnumerable<UserView>, int) GetAll(UserParameters query)
     {
-      var account = await context.Accounts.FirstOrDefaultAsync(a => a.Type == entity.AccountType);
-      if (account == null)
-      {
-        throw new Exception("Invalid account type!");
-      }
-      user.AccountID = account.ID;
+        var filter = context.Users.Select(u => u);
+        if (!string.IsNullOrEmpty(query.Type))
+        {
+            var accountType = (Account)Enum.Parse(typeof(Account), query.Type);
+            filter = filter.Where(u => u.AccountType == accountType);
+        }
+        if (!string.IsNullOrEmpty(query.Name))
+        {
+            filter = filter.Where(u => u.FirstName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase) || u.LastName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase));
+        }
+        if (query.MinAge > 0 && query.MinAge <= query.MaxAge)
+        {
+            filter = filter.Where(u => u.Age >= query.MinAge);
+        }
+        if (query.MaxAge > 0 && query.MaxAge >= query.MinAge)
+        {
+            filter = filter.Where(u => u.Age <= query.MaxAge);
+        }
+        if (!string.IsNullOrEmpty(query.ManagerName))
+        {
+            filter = filter.Where(u => u.ManagerName == query.ManagerName);
+        }
+        return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList().Select(mapper.Map<UserView>), filter.Count());
     }
 
-    mapper.Map(entity, user);
-    context.Users.Update(user);
-    context.SaveChanges();
-  }
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await context.Users.FindAsync(id);
+    }
 
-  public async Task<User> CreateAccount(AccountInfo info)
-  {
-    var found = await context.Users.FirstOrDefaultAsync(x => x.Email == info.Username);
-    if (found != null)
+    public async Task UpdateAsync(int id, UpdateRequest entity)
     {
-      throw new Exception("A user with this username already exists! Please log in instead.");
-    }
-    string salt = BCrypt.GenerateSalt(13);
-    string hashPassword = BCrypt.HashPassword(info.Password, salt, true);
-    var account = new User
-    {
-      Email = info.Username,
-      HashPassword = hashPassword,
-      AccountID = 1
-    };
-    context.Users.Add(account);
-    context.SaveChanges();
-    return account;
-  }
+        var user = await context.Users.FindAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
 
-  public async Task<AuthenticateResponse> Login(string authorization)
-  {
-    if (authorization == null)
-    {
-      throw new Exception("Authorization header not found!");
+        if (!string.IsNullOrEmpty(entity.Password))
+        {
+            user.HashPassword = BCrypt.HashPassword(entity.Password, BCrypt.GenerateSalt(13), true);
+        }
+
+        if (!string.IsNullOrEmpty(entity.AccountType))
+        {
+            user.AccountType = (Account)Enum.Parse(typeof(Account), entity.AccountType);
+        }
+        mapper.Map(entity, user);
+        context.SaveChanges();
     }
-    string[] temp = authorization.Trim().Split(" ");
-    if (temp.Length != 2 || !temp[0].Equals("basic", StringComparison.OrdinalIgnoreCase))
+
+    public async Task CreateUserAsync(RegisterRequest info)
     {
-      throw new Exception("Authorization header must be in the form basic base64(username:password)!");
+        var found = await context.Users.FirstOrDefaultAsync(x => x.Email == info.Email);
+        if (found != null)
+        {
+            throw new ArgumentException("User already exists!");
+        }
+        string salt = BCrypt.GenerateSalt(13);
+        string hashPassword = BCrypt.HashPassword(info.Password, salt, true);
+        var user = mapper.Map<User>(info);
+        user.HashPassword = hashPassword;
+        user.AccountType = Account.Admin;
+        context.Users.Add(user);
+        context.SaveChanges();
     }
-    var buffer = new byte[temp[1].Length];
-    if (!Convert.TryFromBase64String(temp[1], buffer, out _))
+
+    public async Task<AuthenticateResponse> LoginAsync(LoginRequest login)
     {
-      throw new Exception("Username and password must be base64(username:password)!");
+        var found = await context.Users.SingleOrDefaultAsync(u => u.Email == login.Username);
+        if (found == null || !BCrypt.Verify(login.Password, found.HashPassword, true))
+        {
+            throw new ArgumentException("Username or password incorrect!");
+        }
+        return GenerateTokens(found);
     }
-    byte[] data = Convert.FromBase64String(temp[1]);
-    string[] decodedString = Encoding.UTF8.GetString(data).Split(":");
-    if (decodedString.Length != 2)
+
+    public async Task<User?> GetByTokenAsync(string token)
     {
-      throw new Exception("Base 64 encoded string needs to be of the form username:password");
+        return await context.Users.SingleOrDefaultAsync(u => u.RefreshToken == token);
     }
-    string username = decodedString[0];
-    string password = decodedString[1];
-    var found = await context.Users.SingleOrDefaultAsync(m => m.Email == username);
-    if (found == null || !BCrypt.Verify(password, found.HashPassword, true))
+
+    public void Logout(User user)
     {
-      throw new Exception("The username or password is incorrect!");
+        user.Logout();
+        context.SaveChanges();
     }
-    var response = mapper.Map<AuthenticateResponse>(found);
-    response.Token = jwtUtils.GenerateToken(found);
-    return response;
-  }
+
+    public AuthenticateResponse GenerateTokens(User user)
+    {
+        user.SetToken(jwtUtils.GenerateRefreshToken(), DateTime.UtcNow.AddDays(2));
+        context.SaveChanges();
+        return new AuthenticateResponse()
+        {
+            AccessToken = jwtUtils.GenerateAccessToken(user),
+            RefreshToken = user.RefreshToken,
+            RefreshTokenExpiry = user.RefreshTokenExpires,
+            UserID = user.ID
+        };
+    }
 }
