@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VueApp1.Server.Models;
+namespace VueApp1.Server.Models.Entities;
 
 public class Performance
 {

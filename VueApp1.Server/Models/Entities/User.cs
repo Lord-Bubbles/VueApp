@@ -1,38 +1,67 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using VueApp1.Server.Models.Enums;
 
-namespace VueApp1.Server.Models;
+namespace VueApp1.Server.Models.Entities;
 
 public class User
 {
   public int ID { get; set; }
 
-  public string FirstName { get; set; } = "";
+  public string FirstName { get; set; }
 
-  public string LastName { get; set; } = "";
+  public string LastName { get; set; }
 
   public int Age { get; set; }
 
-  public string Email { get; set; } = "";
+  public string Email { get; set; }
 
   public DateTime Birthday { get; set; }
 
-  public string PhoneNum { get; set; } = "";
+  public Account AccountType { get; set; }
 
-  public string ManagerName { get; set; } = "";
+  public string PhoneNum { get; set; } = string.Empty;
+
+  public string ManagerName { get; set; } = string.Empty;
+
+  public string? RefreshToken { get; set; }
+
+  public DateTime RefreshTokenExpires { get; set; }
 
   [JsonIgnore]
-  public string HashPassword { get; set; } = "";
+  public string HashPassword { get; set; }
 
-  public int AccountID { get; set; }
+  public virtual ICollection<Performance> Performances { get; set; } = [];
 
-  public virtual Account Account { get; set; }
+  public void SetToken(string token, DateTime expires)
+  {
+    RefreshToken = token;
+    RefreshTokenExpires = expires;
+  }
 
-  public virtual ICollection<Performance> Performances { get; set; }
+  public void Logout()
+  {
+    RefreshToken = null;
+  }
 }
 
-public class AccountInfo
+public class RegisterRequest
+{
+  [Required]
+  public string Email { get; set; }
+
+  [Required]
+  public string Password { get; set; }
+
+  [Required]
+  public string FirstName { get; set; }
+
+  [Required]
+  public string LastName { get; set; }
+}
+
+public class LoginRequest
 {
   [Required]
   public string Username { get; set; }
@@ -43,15 +72,15 @@ public class AccountInfo
 
 public class AuthenticateResponse
 {
-  public int ID { get; set; }
+  public string AccessToken { get; set; }
 
-  public string FirstName { get; set; }
+  [JsonIgnore]
+  public string RefreshToken { get; set; }
 
-  public string LastName { get; set; }
+  [JsonIgnore]
+  public DateTime RefreshTokenExpiry { get; set; }
 
-  public string Email { get; set; }
-
-  public string Token { get; set; }
+  public int UserID { get; set; }
 }
 
 public class UpdateRequest : UserView
@@ -61,7 +90,7 @@ public class UpdateRequest : UserView
 
 public class UserView
 {
-  public int ID { get; }
+  public int ID { get; set; }
 
   public string FirstName { get; set; }
 
@@ -100,6 +129,3 @@ public class UserParameters : QueryParameters
   [FromQuery(Name = "email")]
   public string? Email { get; set; }
 }
-
-
-

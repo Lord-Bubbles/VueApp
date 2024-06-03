@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VueApp1.Server.Models;
+namespace VueApp1.Server.Models.Entities;
 
 public class QueryParameters
 {
