@@ -1,11 +1,5 @@
+import { useAuthStore } from '@/stores/authStore';
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
-import MyProfile from '@/components/MyProfile.vue';
-import PerformancePage from '@/components/PerformancePage.vue';
-import LoginView from '@/views/LoginView.vue';
-import SignupView from '@/views/SignupView.vue';
-import AdminPage from '@/components/AdminPage.vue';
-import ManagerPage from '@/components/ManagerPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,29 +7,30 @@ const router = createRouter({
     {
       path: '/user/:id',
       name: 'home',
-      component: HomeView,
+      component: () => import('@/pages/HomePage.vue'),
       children: [
         {
           path: 'profile',
           name: 'profile',
-          component: MyProfile
+          component: () => import('@/pages/ProfilePage.vue')
         },
         {
           path: 'performance',
           name: 'performance',
-          component: PerformancePage
+          component: () => import('@/pages/PerformancePage.vue')
         },
         {
           path: 'admin',
           name: 'admin',
-          component: AdminPage
+          component: () => import('@/pages/AdminPage.vue')
         },
         {
           path: 'manager',
           name: 'manager',
-          component: ManagerPage
+          component: () => import('@/pages/ManagerPage.vue')
         }
-      ]
+      ],
+      meta: { requiresAuth: true }
     },
     {
       path: '/',
@@ -43,13 +38,28 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
-          component: LoginView,
+          component: () => import('@/pages/LoginPage.vue'),
           alias: '/login'
         },
-        { path: '/signup', name: 'signup', component: SignupView }
-      ]
+        { path: '/signup', name: 'signup', component: () => import('@/pages/RegisterPage.vue') }
+      ],
+      meta: { requiresAuth: false }
     }
   ]
+});
+
+// Route guard to redirect to login page if user isn't authenticated
+router.beforeEach((to) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.user) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    return {
+      name: 'login',
+      // save the location we were at to come back later
+      query: { redirect: to.fullPath }
+    };
+  }
 });
 
 export default router;
