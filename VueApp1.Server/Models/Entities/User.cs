@@ -80,12 +80,28 @@ public class AuthenticateResponse
   [JsonIgnore]
   public DateTime RefreshTokenExpiry { get; set; }
 
-  public int UserID { get; set; }
+  public UserView User { get; set; }
 }
 
-public class UpdateRequest : UserView
+public class UpdateRequest
 {
-  public string Password { get; set; }
+  public string? FirstName { get; set; }
+
+  public string? LastName { get; set; }
+
+  public int Age { get; set; }
+
+  public string? Email { get; set; }
+
+  public DateTime Birthday { get; set; }
+
+  public string? PhoneNum { get; set; }
+
+  public string? ManagerName { get; set; }
+
+  public string? AccountType { get; set; }
+
+  public string? Password { get; set; }
 }
 
 public class UserView
