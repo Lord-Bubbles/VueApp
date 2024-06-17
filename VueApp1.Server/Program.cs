@@ -75,6 +75,7 @@ public class Program
     app.UseAuthorization();
 
     app.UseMiddleware<JwtMiddleware>();
+    app.UseMiddleware<ErrorMiddleware>();
 
     app.MapControllers();
 
