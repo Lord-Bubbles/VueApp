@@ -13,7 +13,7 @@ public interface IUserRepository
 {
     (IEnumerable<UserView>, int) GetAll(UserParameters query);
     Task<User?> GetByIdAsync(int id);
-    Task UpdateAsync(int id, UpdateRequest entity);
+    Task<User> UpdateAsync(int id, UpdateRequest entity);
     Task DeleteAsync(int id);
     Task CreateUserAsync(RegisterRequest info);
     Task<AuthenticateResponse> LoginAsync(LoginRequest user);
@@ -32,7 +32,11 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
 
     public async Task DeleteAsync(int id)
     {
-        var user = await context.Users.FindAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
+        var user = await context.Users.FindAsync(id);
+        if (user == null)
+        {
+            return;
+        }
         context.Users.Remove(user);
         context.SaveChanges();
     }
@@ -45,10 +49,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
             var accountType = (Account)Enum.Parse(typeof(Account), query.Type);
             filter = filter.Where(u => u.AccountType == accountType);
         }
-        if (!string.IsNullOrEmpty(query.Name))
-        {
-            filter = filter.Where(u => u.FirstName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase) || u.LastName.Contains(query.Name, StringComparison.CurrentCultureIgnoreCase));
-        }
+
         if (query.MinAge > 0 && query.MinAge <= query.MaxAge)
         {
             filter = filter.Where(u => u.Age >= query.MinAge);
@@ -61,6 +62,10 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         {
             filter = filter.Where(u => u.ManagerName == query.ManagerName);
         }
+        if (!string.IsNullOrEmpty(query.Name))
+        {
+            filter = filter.Where(u => (u.FirstName + " " + u.LastName).ToLower().Contains(query.Name.ToLower()));
+        }
         return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList().Select(mapper.Map<UserView>), filter.Count());
     }
 
@@ -69,7 +74,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         return await context.Users.FindAsync(id);
     }
 
-    public async Task UpdateAsync(int id, UpdateRequest entity)
+    public async Task<User> UpdateAsync(int id, UpdateRequest entity)
     {
         var user = await context.Users.FindAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
 
@@ -84,6 +89,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         }
         mapper.Map(entity, user);
         context.SaveChanges();
+        return user;
     }
 
     public async Task CreateUserAsync(RegisterRequest info)
@@ -91,7 +97,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         var found = await context.Users.FirstOrDefaultAsync(x => x.Email == info.Email);
         if (found != null)
         {
-            throw new ArgumentException("User already exists!");
+            throw new ApplicationException("User already exists!");
         }
         string salt = BCrypt.GenerateSalt(13);
         string hashPassword = BCrypt.HashPassword(info.Password, salt, true);
@@ -107,7 +113,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         var found = await context.Users.SingleOrDefaultAsync(u => u.Email == login.Username);
         if (found == null || !BCrypt.Verify(login.Password, found.HashPassword, true))
         {
-            throw new ArgumentException("Username or password incorrect!");
+            throw new ApplicationException("Username or password incorrect!");
         }
         return GenerateTokens(found);
     }
@@ -132,7 +138,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
             AccessToken = jwtUtils.GenerateAccessToken(user),
             RefreshToken = user.RefreshToken,
             RefreshTokenExpiry = user.RefreshTokenExpires,
-            UserID = user.ID
+            User = mapper.Map<UserView>(user)
         };
     }
 }
