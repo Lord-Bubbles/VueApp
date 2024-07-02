@@ -16,11 +16,21 @@ public class PerformanceController(IPerformanceRepository repository) : Controll
   [HttpGet]
   public IActionResult GetPerformances([FromQuery] PerformanceParameters query)
   {
+    var authUser = (User)HttpContext.Items["User"];
+    if (query.UserID != authUser.ID)
+    {
+      return Unauthorized();
+    }
+    if (query.Page <= 0 || query.Limit <= 0)
+    {
+      return BadRequest("page and limit query parameters not valid!");
+    }
     var (performances, count) = repository.GetAll(query);
     return Ok(new { performances, count });
   }
 
   [HttpGet("{id}")]
+  // Not implemented
   public async Task<IActionResult> GetPerformance(int id)
   {
     var performance = await repository.GetByIdAsync(id);
@@ -30,11 +40,17 @@ public class PerformanceController(IPerformanceRepository repository) : Controll
   [HttpPost]
   public async Task<IActionResult> CreatePerformance([FromBody] Performance performance)
   {
+    var authUser = (User)HttpContext.Items["User"];
+    if (authUser.ID != performance.UserID)
+    {
+      return Unauthorized();
+    }
     await repository.CreateAsync(performance);
     return Ok("Performance review successfully created!");
   }
 
   [HttpDelete("{id}")]
+  // Not implemented
   public async Task<IActionResult> DeletePerformance(int id)
   {
     await repository.DeleteAsync(id);
