@@ -49,16 +49,23 @@ const router = createRouter({
 });
 
 // Route guard to redirect to login page if user isn't authenticated
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore();
-  if (to.meta.requiresAuth && !authStore.user) {
-    // this route requires auth, check if logged in
-    // if not, redirect to login page.
-    return {
-      name: 'login',
-      // save the location we were at to come back later
-      query: { redirect: to.fullPath }
-    };
+
+  if (to.meta.requiresAuth) {
+    if (!authStore.token) {
+      // upon refresh, only get new access/refresh token pair if token state is not valid
+      try {
+        await authStore.refresh();
+      } catch {
+        // Invalid refresh token so redirect to login page
+        return {
+          name: 'login',
+          // save the location we were at to come back later
+          query: { redirect: to.fullPath }
+        };
+      }
+    }
   }
 });
 
