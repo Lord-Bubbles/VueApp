@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VueApp1.Server.Models.Entities;
@@ -23,9 +24,9 @@ public class Performance
 
 public class PerformanceParameters : QueryParameters
 {
-  [FromQuery(Name = "user")]
+  [FromQuery(Name = "user"), Required]
   public int UserID { get; set; }
 
-  [FromQuery(Name = "type")]
+  [FromQuery(Name = "type"), Required]
   public string? Type { get; set; }
 }
