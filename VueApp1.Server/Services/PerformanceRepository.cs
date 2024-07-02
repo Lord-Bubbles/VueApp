@@ -29,20 +29,17 @@ public class PerformanceRepository(AppDbContext context) : IPerformanceRepositor
 
     public (IEnumerable<Performance>, int) GetAll(PerformanceParameters query)
     {
-        if (query.Page <= 0 || query.Limit <= 0)
-        {
-            throw new Exception("Error: page and limit query parameters not valid!");
-        }
-        var filter = context.Performances.OrderByDescending(p => p.CreatedAt);
+
+        var filter = context.Performances.OrderByDescending(p => p.CreatedAt).Select(p => p); ;
         if (query.Type != null && query.Type != string.Empty)
         {
-            filter = (IOrderedQueryable<Performance>)filter.Where(p => p.Type == query.Type);
+            filter = filter.Where(p => p.Type == query.Type);
         }
         if (query.UserID > 0)
         {
-            filter = (IOrderedQueryable<Performance>)filter.Where(p => p.UserID == query.UserID);
+            filter = filter.Where(p => p.UserID == query.UserID);
         }
-        return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList(), filter.Count());
+        return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).OrderBy(p => p.ID).ToList(), filter.Count());
     }
 
     public Task<Performance> GetByIdAsync(int id)
