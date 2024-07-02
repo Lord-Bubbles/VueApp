@@ -1,7 +1,5 @@
-import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
-import plugin from '@vitejs/plugin-vue';
+import vue from '@vitejs/plugin-vue';
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
@@ -14,13 +12,11 @@ const baseFolder =
 const certificateArg = process.argv
   .map((arg) => arg.match(/--name=(?<value>.+)/i))
   .filter(Boolean)[0];
-const certificateName = certificateArg
-  ? certificateArg.groups.value
-  : 'vueapp1.client';
+const certificateName = certificateArg ? certificateArg.groups.value : 'vueapp1.client';
 
 if (!certificateName) {
   console.error(
-    'Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.',
+    'Invalid certificate name. Run this script in the context of an npm/yarn script or pass --name=<<app>> explicitly.'
   );
   process.exit(-1);
 }
@@ -33,16 +29,8 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
     0 !==
     child_process.spawnSync(
       'dotnet',
-      [
-        'dev-certs',
-        'https',
-        '--export-path',
-        certFilePath,
-        '--format',
-        'Pem',
-        '--no-password',
-      ],
-      { stdio: 'inherit' },
+      ['dev-certs', 'https', '--export-path', certFilePath, '--format', 'Pem', '--no-password'],
+      { stdio: 'inherit' }
     ).status
   ) {
     throw new Error('Could not create certificate.');
@@ -51,23 +39,21 @@ if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [plugin()],
+  plugins: [vue()],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
+    alias: { '@': path.resolve(__dirname, './src') }
   },
   server: {
     proxy: {
       '^/api/*': {
         target: 'https://localhost:7040',
-        secure: false,
-      },
+        secure: false
+      }
     },
     port: 5173,
     https: {
       key: fs.readFileSync(keyFilePath),
-      cert: fs.readFileSync(certFilePath),
-    },
-  },
+      cert: fs.readFileSync(certFilePath)
+    }
+  }
 });
