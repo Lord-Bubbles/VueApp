@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace VueApp1.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +22,7 @@ namespace VueApp1.Server.Migrations
                     LastName = table.Column<string>(type: "text", nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    Birthday = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Birthday = table.Column<DateOnly>(type: "date", nullable: false),
                     AccountType = table.Column<int>(type: "integer", nullable: false),
                     PhoneNum = table.Column<string>(type: "text", nullable: false),
                     ManagerName = table.Column<string>(type: "text", nullable: false),

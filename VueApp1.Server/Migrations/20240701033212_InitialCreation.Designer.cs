@@ -12,8 +12,8 @@ using VueApp1.Server.Helpers;
 namespace VueApp1.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240602234026_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240701033212_InitialCreation")]
+    partial class InitialCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,8 +79,8 @@ namespace VueApp1.Server.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Birthday")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Birthday")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()
