@@ -1,5 +1,9 @@
 import { useAuthStore } from '@/stores/authStore';
-import { fetchIntercept } from './fetchIntercept';
+import { fetchIntercept } from '@/utils/fetchIntercept';
+import { useToast } from 'vue-toastification';
+
+const authStore = useAuthStore();
+const toast = useToast();
 
 export async function getUsers(query) {
   const { response, data } = await fetchIntercept(
@@ -20,26 +24,25 @@ export async function deleteUser(id) {
   if (!response.ok) {
     throw new Error();
   }
-  const authStore = useAuthStore();
   if (authStore.user.id === id) {
     await authStore.logout();
   }
+  toast.success('Deleted user successfully');
 }
 
-export async function updateUser(params) {
+export async function updateUser(id, params) {
   const body = Object.assign({}, params);
   delete body.confirmPassword;
-  const { response, data } = await fetchIntercept(`/api/User/${params.id}`, {
+  const { response, data } = await fetchIntercept(`/api/User/${id}`, {
     method: 'PUT',
     body: JSON.stringify(body)
   });
   if (!response.ok) {
+    toast.error('An error occurred while updating user');
     throw new Error();
   }
-  const authStore = useAuthStore();
-  if (authStore.user.id === params.id) {
+  if (authStore.user.id === id) {
     authStore.user = data;
-    localStorage.setItem('user', JSON.stringify(data));
   }
-  return data;
+  toast.success('Updated user successfully');
 }
