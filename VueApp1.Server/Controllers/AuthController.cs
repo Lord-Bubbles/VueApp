@@ -34,7 +34,7 @@ namespace VueApp1.Server.Controllers
 
       if (user == null || user.RefreshTokenExpires < DateTime.UtcNow)
       {
-        // If refresh token is not valid one or has expired, remove from database and clear cookie
+        // If refresh token is not valid or has expired, remove from database and clear cookie
         if (user != null)
         {
           userRepository.Logout(user);
