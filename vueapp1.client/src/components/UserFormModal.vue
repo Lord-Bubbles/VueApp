@@ -1,59 +1,48 @@
 <script setup>
-  import { computed, ref, inject } from 'vue';
+  import { useMutation, useQueryClient } from '@tanstack/vue-query';
+  import { ref } from 'vue';
+  import { deleteUser, updateUser } from '@/utils/userService';
+  import AutoComplete from './AutoComplete.vue';
 
-  const props = defineProps(['mode', 'data']);
-  const modal = defineModel();
-  const emit = defineEmits(['onUpdate']);
-
-  const { managerNames, getManagers } = inject('allManagers');
-  const managerInput = ref(null);
+  const props = defineProps({
+    mode: {
+      type: String,
+      required: true
+    },
+    data: {
+      type: Object,
+      required: true
+    }
+  });
+  const modal = defineModel({ required: true, type: Boolean });
 
   const formData = ref({
-    id: props.data?.id,
     firstName: props.data?.firstName,
     lastName: props.data?.lastName,
     email: props.data?.email,
-    age: props.data?.age,
     birthday: props.data?.birthday,
     phoneNum: props.data?.phoneNum,
-    account: { type: props.data?.account.type },
+    accountType: props.data?.accountType,
     managerName: props.data?.managerName
   });
 
-  const formattedBirthday = computed({
-    get() {
-      const date = formData.value.birthday ? new Date(formData.value.birthday) : new Date();
-      const dateTimeFormat = new Intl.DateTimeFormat('en-CA');
-      const string = dateTimeFormat.format(date);
-      return string;
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: (params) => {
+      props.mode === 'delete' ? deleteUser(params) : updateUser(props.data?.id, params);
     },
-    set(newValue) {
-      formData.value.birthday = new Date(newValue).toISOString();
+    onSuccess: async () => {
+      modal.value = false;
+      return await queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
     }
   });
 
-  const filteredManagers = computed(() => {
-    const filter = managerNames.filter((n) =>
-      n.toLowerCase().includes(formData.value.managerName.toLowerCase())
-    );
-    return filter.length > 0 ? filter : ['No results'];
-  });
-
-  const updateData = async () => {
-    try {
-      await fetch(`/api/User/${formData.value.id}`, {
-        method: props.mode === 'edit' ? 'PUT' : 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: props.mode === 'edit' ? JSON.stringify(formData.value) : null
-      });
-      modal.value = false;
-      emit('onUpdate');
-      await getManagers();
-    } catch (error) {
-      console.log('An error has occurred while updating! ' + error);
+  const updateData = () => {
+    if (props.mode === 'delete') {
+      mutate(formData.value.id);
+    } else {
+      mutate(formData.value);
     }
   };
 </script>
@@ -111,40 +100,16 @@
                 </div>
                 <div class="col">
                   <label class="form-label">Employee Type</label>
-                  <select class="form-select" v-model="formData.account.type">
-                    <option>admin</option>
-                    <option>manager</option>
-                    <option>employee</option>
+                  <select class="form-select" v-model="formData.accountType">
+                    <option>Admin</option>
+                    <option>Manager</option>
+                    <option>Employee</option>
                   </select>
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Manager</label>
-                <div class="dropdown">
-                  <input
-                    ref="managerInput"
-                    type="text"
-                    class="form-control"
-                    v-model="formData.managerName"
-                    placeholder="Manager Name"
-                    data-bs-toggle="dropdown"
-                  />
-                  <ul class="dropdown-menu">
-                    <li v-for="(name, index) in filteredManagers" :key="name + '-' + index">
-                      <button
-                        type="button"
-                        class="dropdown-item"
-                        :disabled="name === 'No results' ? true : false"
-                        @click="() => (managerInput.value = name)"
-                      >
-                        {{ name }}
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              <AutoComplete v-model="formData.managerName" />
             </div>
-            <div class="d-flex justify-content-evenly mt-3">
+            <div class="d-flex justify-content-evenly my-3">
               <button
                 type="submit"
                 class="btn"
