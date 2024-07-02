@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using VueApp1.Server.Models.Entities;
 using VueApp1.Server.Services;
 using VueApp1.Server.Authorization;
+using VueApp1.Server.Models.Enums;
 using AutoMapper;
 
 [ApiController]
@@ -20,7 +21,7 @@ public class UserController(IUserRepository repository, IMapper mapper) : Contro
     {
         var authUser = (User)HttpContext.Items["User"];
         // Only Admins are allowed to access all users' infos
-        if (authUser.AccountType != Models.Enums.Account.Admin)
+        if (authUser.AccountType == Account.Employee)
         {
             return Unauthorized();
         }
@@ -37,7 +38,7 @@ public class UserController(IUserRepository repository, IMapper mapper) : Contro
     {
         var authUser = (User)HttpContext.Items["User"];
         // Only Admins are allowed to access others' infos. Else user only allowed to access own info
-        if (authUser.ID != id && authUser.AccountType != Models.Enums.Account.Admin)
+        if (authUser.ID != id && authUser.AccountType != Account.Admin)
         {
             return Unauthorized();
         }
@@ -54,12 +55,12 @@ public class UserController(IUserRepository repository, IMapper mapper) : Contro
     {
         var authUser = (User)HttpContext.Items["User"];
         // Only Admins are allowed to change other people's user info. Else user only allowed to change own info
-        if (authUser.ID != id && authUser.AccountType != Models.Enums.Account.Admin)
+        if (authUser.ID != id && authUser.AccountType != Account.Admin)
         {
             return Unauthorized();
         }
         var updatedUser = await repository.UpdateAsync(id, user);
-        return Ok(updatedUser);
+        return Ok(mapper.Map<UserView>(updatedUser));
     }
 
     [HttpDelete("{id}")]
@@ -67,7 +68,7 @@ public class UserController(IUserRepository repository, IMapper mapper) : Contro
     {
         var authUser = (User)HttpContext.Items["User"];
         // Only Admins are allowed to delete users
-        if (authUser.AccountType != Models.Enums.Account.Admin)
+        if (authUser.AccountType != Account.Admin)
         {
             return Unauthorized();
         }
