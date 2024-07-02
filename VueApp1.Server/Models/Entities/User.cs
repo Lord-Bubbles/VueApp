@@ -17,7 +17,7 @@ public class User
 
   public string Email { get; set; }
 
-  public DateTime Birthday { get; set; }
+  public DateOnly Birthday { get; set; }
 
   public Account AccountType { get; set; }
 
@@ -89,11 +89,9 @@ public class UpdateRequest
 
   public string? LastName { get; set; }
 
-  public int Age { get; set; }
-
   public string? Email { get; set; }
 
-  public DateTime Birthday { get; set; }
+  public DateOnly Birthday { get; set; }
 
   public string? PhoneNum { get; set; }
 
@@ -116,7 +114,7 @@ public class UserView
 
   public string Email { get; set; }
 
-  public DateTime Birthday { get; set; }
+  public DateOnly Birthday { get; set; }
 
   public string PhoneNum { get; set; }
 
