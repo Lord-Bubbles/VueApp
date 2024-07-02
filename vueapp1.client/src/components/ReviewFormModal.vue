@@ -1,8 +1,26 @@
 <script setup>
-  import { ref, defineModel, inject } from 'vue';
+  import { useMutation, useQueryClient } from '@tanstack/vue-query';
+  import { ref } from 'vue';
+  import { createPerformance } from '@/utils/performanceService';
 
-  const { user } = inject('user');
-  const props = defineProps(['type', 'userID']);
+  const props = defineProps({
+    type: {
+      required: true,
+      type: String
+    },
+    userID: {
+      type: Number,
+      required: true
+    }
+  });
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: (params) => createPerformance(params),
+    onSuccess: async () => {
+      return await queryClient.invalidateQueries({ queryKey: ['performances'] });
+    }
+  });
 
   const formData = ref({
     rating: 0,
@@ -10,32 +28,10 @@
     improve: [''],
     well: ['']
   });
-  const modal = defineModel();
-  const emit = defineEmits(['onCreated']);
+  const modal = defineModel({ required: true, type: Boolean });
 
-  const addReview = async () => {
-    const performance = Object.assign({}, formData.value);
-    performance.type = props.type;
-    performance.userID =
-      props.userID === undefined || props.userID === null || props.userID <= 0
-        ? user?.id
-        : props.userID;
-    performance.createdAt = new Date().toISOString();
-    try {
-      const response = await fetch('/api/Performance', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(performance)
-      });
-      await response.json();
-      modal.value = false;
-      emit('onCreated');
-    } catch (error) {
-      console.log('Error occured when creating performance review: ' + error);
-    }
+  const addReview = () => {
+    mutate({ ...formData.value, userID: props.userID, type: props.type });
   };
 </script>
 
