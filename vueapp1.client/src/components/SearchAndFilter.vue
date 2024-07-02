@@ -1,37 +1,31 @@
 <script setup>
+  import { useQueryClient } from '@tanstack/vue-query';
   import { useRoute, useRouter } from 'vue-router';
-  import { inject, computed, ref } from 'vue';
+  import AutoComplete from './AutoComplete.vue';
 
-  const formData = defineModel();
+  const formData = defineModel({ type: Object, required: true });
   const router = useRouter();
   const route = useRoute();
-  const { managerNames } = inject('allManagers');
-  const managerInput = ref(null);
+  const queryClient = useQueryClient();
 
   const reset = () => {
     formData.value = {
       name: '',
       minAge: 0,
       maxAge: 0,
-      manager: '',
+      managerName: '',
       type: '',
       email: '',
       page: 1,
-      limit: 20
+      limit: formData.value.limit
     };
-    router.replace({ name: route.name });
+    router.push({ name: route.name, query: { page: 1, limit: route.query.limit } });
+    queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
   };
-
-  const filteredManagers = computed(() => {
-    const filter = managerNames.filter((n) =>
-      n.toLowerCase().includes(formData.value.manager.toLowerCase())
-    );
-    return filter.length > 0 ? filter : ['No results'];
-  });
 </script>
 
 <template>
-  <main>
+  <div>
     <div class="input-group mb-3">
       <input
         type="text"
@@ -114,49 +108,7 @@
               />
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="text" class="form-control" v-model="formData.email" placeholder="Email" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Manager Name</label>
-            <div class="dropdown">
-              <input
-                ref="managerInput"
-                type="text"
-                class="form-control"
-                :value="formData.manager"
-                @change="
-                  (e) => {
-                    formData.manager = e.target.value;
-                    const query = Object.assign({}, route.query);
-                    if (!formData.manager) {
-                      delete query.manager;
-                    } else {
-                      query.manager = e.target.value;
-                    }
-                    router.replace({
-                      query
-                    });
-                  }
-                "
-                placeholder="Manager Name"
-                data-bs-toggle="dropdown"
-              />
-              <ul class="dropdown-menu">
-                <li v-for="(name, index) in filteredManagers" :key="name + '-' + index">
-                  <button
-                    type="button"
-                    class="dropdown-item"
-                    :disabled="name === 'No results' ? true : false"
-                    @click="() => (managerInput.value = name)"
-                  >
-                    {{ name }}
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <AutoComplete v-model="formData.managerName" />
           <div class="mb-3">
             <label class="form-label">Employee Type</label>
             <select
@@ -178,9 +130,9 @@
               "
             >
               <option value="">Select...</option>
-              <option>admin</option>
-              <option>manager</option>
-              <option>employee</option>
+              <option>Admin</option>
+              <option>Manager</option>
+              <option>Employee</option>
             </select>
           </div>
           <div class="d-flex justify-content-center">
@@ -189,5 +141,5 @@
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>
