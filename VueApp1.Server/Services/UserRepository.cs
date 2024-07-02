@@ -33,10 +33,6 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
     public async Task DeleteAsync(int id)
     {
         var user = await context.Users.FindAsync(id);
-        if (user == null)
-        {
-            return;
-        }
         context.Users.Remove(user);
         context.SaveChanges();
     }
@@ -66,7 +62,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         {
             filter = filter.Where(u => (u.FirstName + " " + u.LastName).ToLower().Contains(query.Name.ToLower()));
         }
-        return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList().Select(mapper.Map<UserView>), filter.Count());
+        return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).OrderBy(u => u.ID).ToList().Select(mapper.Map<UserView>), filter.Count());
     }
 
     public async Task<User?> GetByIdAsync(int id)
@@ -86,6 +82,12 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
         if (!string.IsNullOrEmpty(entity.AccountType))
         {
             user.AccountType = (Account)Enum.Parse(typeof(Account), entity.AccountType);
+        }
+        var today = DateTime.Today;
+        user.Age = today.Year - entity.Birthday.Year;
+        if (today.Month < entity.Birthday.Month || (today.Month == entity.Birthday.Month && today.Day < entity.Birthday.Day))
+        {
+            user.Age -= 1;
         }
         mapper.Map(entity, user);
         context.SaveChanges();
