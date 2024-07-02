@@ -1,14 +1,14 @@
 <script setup>
-  import { inject } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useAuthStore } from '@/stores/authStore';
+  import { storeToRefs } from 'pinia';
+  import { useRoute } from 'vue-router';
 
-  const { user, removeUser } = inject('user');
   const route = useRoute();
-  const router = useRouter();
+  const authStore = useAuthStore();
+  const { user } = storeToRefs(authStore);
 
   const logout = async () => {
-    removeUser();
-    await router.replace({ name: 'login' });
+    await authStore.logout();
   };
 </script>
 
@@ -61,7 +61,7 @@
           Performance Reviews
         </router-link>
       </li>
-      <li class="nav-item" v-if="user.account.type === 'admin'">
+      <li class="nav-item" v-if="user.accountType === 'Admin'">
         <router-link
           class="nav-link"
           :to="{ name: 'admin', params: { id: user.id }, query: { limit: 2, page: 1 } }"
@@ -75,7 +75,7 @@
           All Users
         </router-link>
       </li>
-      <li v-if="user.account.type === 'manager'" class="nav-item">
+      <li v-if="user.accountType === 'Manager'" class="nav-item">
         <router-link
           class="nav-link"
           :to="{ name: 'manager', params: { id: user.id } }"
