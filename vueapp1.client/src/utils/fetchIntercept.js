@@ -7,23 +7,22 @@ const originalRequest = async (url, config) => {
 };
 
 export const fetchIntercept = async (url, config = {}) => {
-  const token = localStorage.getItem('token');
+  const authStore = useAuthStore();
 
   config['headers'] = {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${authStore.token}`,
     'Content-Type': 'application/json',
     Accept: 'application/json'
   };
 
   let { response, data } = await originalRequest(url, config);
-  const authStore = useAuthStore();
 
   if (response.statusText === 'Unauthorized') {
     await authStore.refresh();
 
     config['headers'] = {
       ...config['headers'],
-      Authorization: `Bearer ${localStorage.getItem('token')}`
+      Authorization: `Bearer ${authStore.token}`
     };
 
     const newResponse = await originalRequest(url, config);

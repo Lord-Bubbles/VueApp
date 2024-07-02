@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import router from '@/router/index';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(JSON.parse(localStorage.getItem('user')));
+  const user = ref({});
+  const token = ref(null);
 
   async function login(form) {
     const response = await fetch('/api/Auth/authenticate', {
@@ -15,13 +19,12 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      alert('Incorrect username or password!');
-      return;
+      toast.error('Invalid username or password!');
+      throw new Error();
     }
     const data = await response.json();
     user.value = data.user;
-    localStorage.setItem('token', data.accessToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
+    token.value = data.accessToken;
     await router.push({ name: 'home', params: { id: data.user.id } });
   }
 
@@ -29,12 +32,11 @@ export const useAuthStore = defineStore('auth', () => {
     await fetch('/api/Auth/logout', {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${token.value}`
       }
     });
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    user.value = null;
+    token.value = null;
+    user.value = {};
     await router.push({ name: 'login' });
   }
 
@@ -44,14 +46,13 @@ export const useAuthStore = defineStore('auth', () => {
     });
     if (!response.ok) {
       console.log('Error: invalid refresh token!');
-      user.value = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      await router.push({ name: 'login' });
-      return;
+      user.value = {};
+      token.value = null;
+      throw new Error();
     }
     const data = await response.json();
-    localStorage.setItem('token', data.accessToken);
+    token.value = data.accessToken;
+    user.value = data.user;
   }
 
   async function register(form) {
@@ -64,11 +65,11 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      alert('This user already exists. Please login instead!');
-      return;
+      toast.error('User already exists. Please login instead!');
+      throw new Error();
     }
     await router.push({ name: 'login' });
   }
 
-  return { user, login, logout, refresh, register };
+  return { user, token, login, logout, refresh, register };
 });
