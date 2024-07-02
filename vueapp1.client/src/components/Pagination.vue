@@ -1,11 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-  import { computed, defineModel } from 'vue';
+  import { computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
 
-  const limit = defineModel('limit');
-  const page = defineModel('page');
-  const count = defineModel('count');
+  const limit = defineModel('limit', { required: true, type: Number });
+  const page = defineModel('page', { required: true, type: Number });
+  const count = defineModel('count', { required: true, type: Number });
   const route = useRoute();
   const router = useRouter();
 
@@ -33,8 +33,8 @@
 
     // Calculate left and right sibling index and make sure they are within
     // range 1 and totalPageCount
-    const leftSiblingIndex = Math.max(page - siblings, 1);
-    const rightSiblingIndex = Math.min(page + siblings, totalPageCount);
+    const leftSiblingIndex = Math.max(page.value - siblings, 1);
+    const rightSiblingIndex = Math.min(page.value + siblings, totalPageCount);
 
     // We do not show dots just when there is just one page number to be
     // inserted between the extremes of sibling and the page limits i.e 1 and
@@ -77,9 +77,9 @@
           type="button"
           @click="
             () => {
-              page = Number(page) - 1;
+              page = page - 1;
               const query = Object.assign({}, route.query);
-              query.page = Number(page) - 1;
+              query.page = page - 1;
               router.replace({ query });
             }
           "
@@ -119,9 +119,9 @@
           type="button"
           @click="
             () => {
-              page = Number(page) + 1;
+              page = page + 1;
               const query = Object.assign({}, route.query);
-              query.page = Number(page) + 1;
+              query.page = page + 1;
               router.replace({ query });
             }
           "
