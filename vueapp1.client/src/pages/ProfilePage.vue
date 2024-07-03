@@ -51,23 +51,23 @@
         <div class="col">
           <label class="form-label">First Name</label>
           <Field class="form-control" name="firstName" />
-          <ErrorMessage class="has-error" name="firstName" />
+          <ErrorMessage class="text-danger" name="firstName" />
         </div>
         <div class="col">
           <label class="form-label">Last Name</label>
           <Field class="form-control" name="lastName" />
-          <ErrorMessage class="has-error" name="lastName" />
+          <ErrorMessage class="text-danger" name="lastName" />
         </div>
       </div>
       <div class="mb-3">
         <label class="form-label">Phone Number</label>
         <Field type="tel" class="form-control" name="phoneNum" />
-        <ErrorMessage class="has-error" name="phoneNum" />
+        <ErrorMessage class="text-danger" name="phoneNum" />
       </div>
       <div class="mb-3">
         <label class="form-label">Birthday</label>
         <Field type="date" class="form-control" name="birthday" />
-        <ErrorMessage class="has-error" name="birthday" />
+        <ErrorMessage class="text-danger" name="birthday" />
       </div>
       <div class="mb-3">
         <label class="form-label">Change Password</label>
@@ -79,7 +79,7 @@
             class="form-control"
             name="password"
           />
-          <ErrorMessage class="has-error" name="password" />
+          <ErrorMessage class="text-danger" name="password" />
         </div>
         <div class="mb-3">
           <Field
@@ -89,7 +89,7 @@
             class="form-control"
             name="confirmPassword"
           />
-          <ErrorMessage class="has-error" name="confirmPassword" />
+          <ErrorMessage class="text-danger" name="confirmPassword" />
         </div>
       </div>
       <button type="submit" class="btn btn-primary">Save Changes</button>
