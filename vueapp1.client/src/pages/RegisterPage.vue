@@ -1,35 +1,37 @@
 <script setup>
   import { useAuthStore } from '@/stores/authStore';
-  import { Form, Field, ErrorMessage } from 'vee-validate';
+  import { Field, ErrorMessage, useForm } from 'vee-validate';
   import { object, ref, string } from 'yup';
 
-  const schema = object().shape({
-    email: string().email('Please enter a valid email').required('Email is required'),
-    firstName: string().required('First name is required'),
-    lastName: string().required('Last name is required'),
-    password: string()
-      .required('Password is required')
-      .min(8, 'Password must be at least 8 characters long'),
-    confirmPassword: string().oneOf([ref('password')], 'Passwords must match!')
+  const { setFieldError, isSubmitting, handleSubmit } = useForm({
+    validationSchema: object().shape({
+      email: string().email('Please enter a valid email').required('Email is required'),
+      firstName: string().required('First name is required'),
+      lastName: string().required('Last name is required'),
+      password: string()
+        .required('Password is required')
+        .min(8, ({ min }) => `Password must be at least ${min} characters long`),
+      confirmPassword: string().oneOf([ref('password')], 'Passwords must match')
+    }),
+    validateOnMount: false
   });
 
-  const createUser = async (values) => {
+  const createUser = handleSubmit(async (values) => {
     delete values.confirmPassword;
     const authStore = useAuthStore();
-    await authStore.register(values);
-  };
+    try {
+      await authStore.register(values);
+    } catch {
+      setFieldError('email', 'A user with this email already exists');
+    }
+  });
 </script>
 
 <template>
   <main class="center-content">
     <div class="grid-location card p-4">
       <h1 class="d-flex justify-content-center">Sign Up</h1>
-      <Form
-        @submit="createUser"
-        :validation-schema="schema"
-        :validate-on-mount="false"
-        v-slot="{ isSubmitting }"
-      >
+      <form @submit="createUser">
         <div class="mb-3">
           <label class="form-label">Username</label>
           <Field class="form-control" type="email" placeholder="test@email.com" name="email" />
@@ -76,7 +78,7 @@
             Sign in here.
           </router-link>
         </span>
-      </Form>
+      </form>
     </div>
   </main>
 </template>

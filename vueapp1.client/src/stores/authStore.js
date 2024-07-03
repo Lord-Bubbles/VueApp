@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import router from '@/router/index';
-import { useToast } from 'vue-toastification';
-
-const toast = useToast();
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref({});
@@ -19,7 +16,6 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      toast.error('Invalid username or password!');
       throw new Error();
     }
     const data = await response.json();
@@ -65,7 +61,6 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      toast.error('User already exists. Please login instead!');
       throw new Error();
     }
     await router.push({ name: 'login' });
