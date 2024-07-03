@@ -12,67 +12,67 @@ using AutoMapper;
 [Route("api/[controller]")]
 public class UserController(IUserRepository repository, IMapper mapper) : ControllerBase
 {
-    private readonly IUserRepository repository = repository;
+  private readonly IUserRepository repository = repository;
 
-    private readonly IMapper mapper = mapper;
+  private readonly IMapper mapper = mapper;
 
-    [HttpGet]
-    public IActionResult GetUsers([FromQuery] UserParameters query)
+  [HttpGet]
+  public IActionResult GetUsers([FromQuery] UserParameters query)
+  {
+    var authUser = (User)HttpContext.Items["User"];
+    // Only Admins are allowed to access all users' infos
+    if (authUser.AccountType == Account.Employee)
     {
-        var authUser = (User)HttpContext.Items["User"];
-        // Only Admins are allowed to access all users' infos
-        if (authUser.AccountType == Account.Employee)
-        {
-            return Unauthorized();
-        }
-        if (query.Page <= 0 || query.Limit <= 0)
-        {
-            return BadRequest("Error: invalid page and limit parameters!");
-        }
-        var (users, count) = repository.GetAll(query);
-        return Ok(new { users, count });
+      return Unauthorized();
     }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(int id)
+    if (query.Page <= 0 || query.Limit <= 0)
     {
-        var authUser = (User)HttpContext.Items["User"];
-        // Only Admins are allowed to access others' infos. Else user only allowed to access own info
-        if (authUser.ID != id && authUser.AccountType != Account.Admin)
-        {
-            return Unauthorized();
-        }
-        var user = await repository.GetByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-        return Ok(mapper.Map<UserView>(user));
+      return BadRequest("Error: invalid page and limit parameters!");
     }
+    var (users, count) = repository.GetAll(query);
+    return Ok(new { users, count });
+  }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateRequest user)
+  [HttpGet("{id}")]
+  public async Task<IActionResult> GetUser(int id)
+  {
+    var authUser = (User)HttpContext.Items["User"];
+    // Only Admins are allowed to access others' infos. Else user only allowed to access own info
+    if (authUser.ID != id && authUser.AccountType != Account.Admin)
     {
-        var authUser = (User)HttpContext.Items["User"];
-        // Only Admins are allowed to change other people's user info. Else user only allowed to change own info
-        if (authUser.ID != id && authUser.AccountType != Account.Admin)
-        {
-            return Unauthorized();
-        }
-        var updatedUser = await repository.UpdateAsync(id, user);
-        return Ok(mapper.Map<UserView>(updatedUser));
+      return Unauthorized();
     }
+    var user = await repository.GetByIdAsync(id);
+    if (user == null)
+    {
+      return NotFound();
+    }
+    return Ok(mapper.Map<UserView>(user));
+  }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
+  [HttpPut("{id}")]
+  public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateRequest user)
+  {
+    var authUser = (User)HttpContext.Items["User"];
+    // Only Admins are allowed to change other people's user info. Else user only allowed to change own info
+    if (authUser.ID != id && authUser.AccountType != Account.Admin)
     {
-        var authUser = (User)HttpContext.Items["User"];
-        // Only Admins are allowed to delete users
-        if (authUser.AccountType != Account.Admin)
-        {
-            return Unauthorized();
-        }
-        await repository.DeleteAsync(id);
-        return Ok("User successfully deleted!");
+      return Unauthorized();
     }
+    var updatedUser = await repository.UpdateAsync(id, user);
+    return Ok(mapper.Map<UserView>(updatedUser));
+  }
+
+  [HttpDelete("{id}")]
+  public async Task<IActionResult> DeleteUser(int id)
+  {
+    var authUser = (User)HttpContext.Items["User"];
+    // Only Admins are allowed to delete users
+    if (authUser.AccountType != Account.Admin)
+    {
+      return Unauthorized();
+    }
+    await repository.DeleteAsync(id);
+    return Ok("User successfully deleted!");
+  }
 }
