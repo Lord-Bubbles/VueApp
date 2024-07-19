@@ -15,7 +15,7 @@
   const filterData = ref({
     name: route.query.name || '',
     minAge: route.query.minAge || 0,
-    maxAge: route.query.maxAge || 0,
+    maxAge: route.query.maxAge || 100,
     managerName: route.query.managerName || '',
     type: route.query.type || '',
     email: route.query.email || '',
@@ -36,6 +36,7 @@
   };
 
   const headers = [
+    'ID',
     'First Name',
     'Last Name',
     'Age',
@@ -45,17 +46,6 @@
     'Manager',
     'Type'
   ];
-
-  const displayData = (user, field) => {
-    if (field === 'birthday') {
-      return new Date(user[field]).toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    }
-    return user[field];
-  };
 </script>
 
 <template>
