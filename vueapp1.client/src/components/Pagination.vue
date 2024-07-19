@@ -76,8 +76,8 @@
 </script>
 
 <template>
-  <nav v-if="paginationRange.length > 1" class="container-fluid">
-    <ul class="pagination d-flex justify-content-center">
+  <nav v-if="paginationRange.length > 1">
+    <ul class="pagination justify-content-center">
       <li class="page-item" :class="{ disabled: page == 1 }">
         <button class="page-link" type="button" @click="updatePageQuery(page - 1)">&laquo;</button>
       </li>
