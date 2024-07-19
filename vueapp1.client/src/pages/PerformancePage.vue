@@ -172,12 +172,7 @@
         v-model:page.number="params.page"
         v-model:count.number="data.count"
       />
-      <ReviewFormModal
-        v-if="modal"
-        :type="params.type"
-        :userID="authStore.user.id"
-        v-model="modal"
-      />
-    </div>
+    </section>
+    <ReviewFormModal v-if="modal" :type="params.type" :userID="authStore.user.id" v-model="modal" />
   </div>
 </template>
