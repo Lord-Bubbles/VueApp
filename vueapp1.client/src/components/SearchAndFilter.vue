@@ -1,26 +1,58 @@
 <script setup>
-  import { useQueryClient } from '@tanstack/vue-query';
+  //import { useQueryClient } from '@tanstack/vue-query';
   import { useRoute, useRouter } from 'vue-router';
   import AutoComplete from './AutoComplete.vue';
+  import { computed } from 'vue';
 
   const formData = defineModel({ type: Object, required: true });
   const router = useRouter();
   const route = useRoute();
-  const queryClient = useQueryClient();
+  //const queryClient = useQueryClient();
+
+  const values = {
+    max: 100,
+    min: 0
+  };
 
   const reset = () => {
     formData.value = {
       name: '',
-      minAge: 0,
-      maxAge: 0,
+      minAge: values.min,
+      maxAge: values.max,
       managerName: '',
       type: '',
-      email: '',
       page: 1,
-      limit: formData.value.limit
+      limit: route.query.limit
     };
     router.push({ name: route.name, query: { page: 1, limit: route.query.limit } });
-    queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
+    //queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
+  };
+
+  const maxArray = computed(() => {
+    const arr = [];
+    for (let i = formData.value.minAge; i <= values.max; i++) {
+      arr.push(i);
+    }
+    return arr;
+  });
+
+  const minArray = computed(() => {
+    const arr = [];
+    for (let i = values.min; i <= formData.value.maxAge; i++) {
+      arr.push(i);
+    }
+    return arr;
+  });
+
+  const updateQuery = (val, key) => {
+    formData.value[key] = val;
+    const query = Object.assign({}, route.query);
+    if ((key == 'maxAge' && formData.value[key] == values.max) || !formData.value[key]) {
+      delete query[key];
+    } else {
+      query[key] = val;
+    }
+    router.replace({ query });
   };
 </script>
 
@@ -32,20 +64,7 @@
         class="form-control"
         placeholder="Search"
         :value="formData.name"
-        @input="
-          (e) => {
-            formData.name = e.target.value;
-            const query = Object.assign({}, route.query);
-            if (!formData.name) {
-              delete query.name;
-            } else {
-              query.name = e.target.value;
-            }
-            router.replace({
-              query
-            });
-          }
-        "
+        @input="(e) => updateQuery(e.target.value, 'name')"
       />
       <span class="input-group-text"><i class="bi bi-search"></i></span>
       <div class="dropdown">
@@ -61,73 +80,32 @@
           <div class="row mb-3">
             <div class="col">
               <label class="form-label">Min Age</label>
-              <input
-                type="number"
-                class="form-control"
+              <select
+                class="form-select"
                 :value="formData.minAge"
-                @input="
-                  (e) => {
-                    formData.minAge = e.target.value;
-                    const query = Object.assign({}, route.query);
-                    if (formData.minAge <= 0) {
-                      delete query.minAge;
-                    } else {
-                      query.minAge = e.target.value;
-                    }
-                    router.replace({
-                      query
-                    });
-                  }
-                "
-                min="0"
-                :max="formData.maxAge"
-              />
+                @change="(e) => updateQuery(e.target.value, 'minAge')"
+              >
+                <option v-for="(num, index) in minArray" :key="'minAge-' + index">{{ num }}</option>
+              </select>
             </div>
             <div class="col">
               <label class="form-label">Max Age</label>
-              <input
-                type="number"
-                class="form-control"
+              <select
+                class="form-select"
                 :value="formData.maxAge"
-                @input="
-                  (e) => {
-                    formData.maxAge = e.target.value;
-                    const query = Object.assign({}, route.query);
-                    if (formData.maxAge <= 0) {
-                      delete query.maxAge;
-                    } else {
-                      query.maxAge = e.target.value;
-                    }
-                    router.replace({
-                      query
-                    });
-                  }
-                "
-                :min="formData.minAge"
-                max="100"
-              />
+                @change="(e) => updateQuery(e.target.value, 'maxAge')"
+              >
+                <option v-for="(num, index) in maxArray" :key="'maxAge-' + index">{{ num }}</option>
+              </select>
             </div>
           </div>
-          <AutoComplete v-model="formData.managerName" />
+          <AutoComplete name="managerName" @update="(val) => updateQuery(val, 'managerName')" />
           <div class="mb-3">
             <label class="form-label">Employee Type</label>
             <select
               class="form-select"
               :value="formData.type"
-              @change="
-                (e) => {
-                  formData.type = e.target.value;
-                  const query = Object.assign({}, route.query);
-                  if (!formData.type) {
-                    delete query.type;
-                  } else {
-                    query.type = e.target.value;
-                  }
-                  router.replace({
-                    query
-                  });
-                }
-              "
+              @change="(e) => updateQuery(e.target.value, 'type')"
             >
               <option value="">Select...</option>
               <option>Admin</option>
