@@ -1,6 +1,7 @@
 <script setup>
   import { useAuthStore } from '@/stores/authStore';
   import { Field, ErrorMessage, useForm } from 'vee-validate';
+  import { useToast } from 'vue-toastification';
   import { object, ref, string } from 'yup';
 
   const { setFieldError, isSubmitting, handleSubmit } = useForm({
@@ -19,10 +20,15 @@
   const createUser = handleSubmit(async (values) => {
     delete values.confirmPassword;
     const authStore = useAuthStore();
+    const toast = useToast();
     try {
       await authStore.register(values);
-    } catch {
-      setFieldError('email', 'A user with this email already exists');
+    } catch (error) {
+      if (error.message == 'Bad Request') {
+        setFieldError('email', 'A user with this email already exists');
+      } else {
+        toast.error('An error has occurred while registering');
+      }
     }
   });
 </script>
