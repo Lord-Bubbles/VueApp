@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      throw new Error();
+      throw new Error(response.statusText);
     }
     const data = await response.json();
     user.value = data.user;
@@ -61,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
       body: JSON.stringify(form)
     });
     if (!response.ok) {
-      throw new Error();
+      throw new Error(response.statusText);
     }
     await router.push({ name: 'login' });
   }

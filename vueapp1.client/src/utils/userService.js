@@ -22,7 +22,7 @@ export async function deleteUser(id) {
     method: 'DELETE'
   });
   if (!response.ok) {
-    throw new Error();
+    throw new Error(response.statusText);
   }
   if (authStore.user.id === id) {
     await authStore.logout();
@@ -38,8 +38,7 @@ export async function updateUser(id, params) {
     body: JSON.stringify(body)
   });
   if (!response.ok) {
-    toast.error('An error occurred while updating user');
-    throw new Error();
+    throw new Error(response.statusText);
   }
   if (authStore.user.id === id) {
     authStore.user = data;
