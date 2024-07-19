@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
     const data = await response.json();
     user.value = data.user;
     token.value = data.accessToken;
-    await router.push({ name: 'home', params: { id: data.user.id } });
+    await router.replace({ name: 'home', params: { id: data.user.id } });
   }
 
   async function logout() {
@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
     });
     token.value = null;
     user.value = {};
-    await router.push({ name: 'login' });
+    await router.replace({ name: 'login' });
   }
 
   async function refresh() {
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-    await router.push({ name: 'login' });
+    await router.replace({ name: 'login' });
   }
 
   return { user, token, login, logout, refresh, register };
