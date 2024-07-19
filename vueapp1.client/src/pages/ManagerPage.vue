@@ -30,15 +30,9 @@
     placeholderData: keepPreviousData
   });
 
-  const displayData = (user, field) => {
-    if (field === 'birthday') {
-      return new Date(user[field]).toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    }
-    return user[field];
+  const setUser = (id) => {
+    modal.value = true;
+    user.value = id;
   };
 </script>
 
@@ -56,21 +50,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user of data.users" :key="user.id">
-            <td v-for="field in fields" :key="field">
-              {{ displayData(user, field) }}
+          <tr v-for="(user, index) of data.users" :key="user.id">
+            <td v-for="field in fields" :key="field + '-' + index">
+              {{ user[field] }}
             </td>
             <td>
-              <button
-                class="btn btn-primary"
-                type="button"
-                @click="
-                  () => {
-                    modal = true;
-                    user = user.id;
-                  }
-                "
-              >
+              <button class="btn btn-primary" type="button" @click="setUser(user.id)">
                 Add Review
               </button>
             </td>
