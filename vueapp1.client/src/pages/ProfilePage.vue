@@ -16,7 +16,6 @@
       message: 'Phone number must be in the form: xxx-xxx-xxxx',
       excludeEmptyString: true
     }),
-    email: string().required('Email is required').email('Please enter a valild email'),
     password: string().matches(/^[\w\W]{8,}$/, {
       message: 'Password must be at least 8 characters long',
       excludeEmptyString: true
@@ -25,7 +24,6 @@
   });
 
   const initialValues = {
-    email: user.value.email,
     firstName: user.value.firstName,
     lastName: user.value.lastName,
     phoneNum: user.value.phoneNum,
