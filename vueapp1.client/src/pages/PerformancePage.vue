@@ -25,6 +25,13 @@
     queryFn: () => getPerformances(params.value),
     initialData: keepPreviousData
   });
+
+  const updateQuery = (val, key) => {
+    params.value[key] = val;
+    const query = Object.assign({}, route.query);
+    query[key] = val;
+    router.replace({ query });
+  };
 </script>
 
 <template>
@@ -36,14 +43,7 @@
           type="button"
           class="btn btn-outline-light rounded-start-pill btn-lg"
           :class="{ active: params.type === 'self' }"
-          @click="
-            () => {
-              params.type = 'self';
-              const query = Object.assign({}, route.query);
-              query.type = 'self';
-              router.replace({ query });
-            }
-          "
+          @click="updateQuery('self', 'type')"
         >
           Self Reviews
         </button>
@@ -51,14 +51,7 @@
           type="button"
           class="btn btn-outline-light rounded-end-pill btn-lg"
           :class="{ active: params.type === 'manager' }"
-          @click="
-            () => {
-              params.type = 'manager';
-              const query = Object.assign({}, route.query);
-              query.type = 'manager';
-              router.replace({ query });
-            }
-          "
+          @click="() => updateQuery('manager', 'type')"
         >
           Manager Reviews
         </button>
