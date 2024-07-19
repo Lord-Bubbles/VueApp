@@ -39,7 +39,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
 
   public (IEnumerable<UserView>, int) GetAll(UserParameters query)
   {
-    var filter = context.Users.Select(u => u);
+    var filter = context.Users.AsQueryable();
     if (!string.IsNullOrEmpty(query.Type))
     {
       var accountType = (Account)Enum.Parse(typeof(Account), query.Type);
@@ -62,7 +62,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
     {
       filter = filter.Where(u => (u.FirstName + " " + u.LastName).ToLower().Contains(query.Name.ToLower()));
     }
-    return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).OrderBy(u => u.ID).ToList().Select(mapper.Map<UserView>), filter.Count());
+    return (filter.Skip((query.Page - 1) * query.Limit).Take(query.Limit).ToList().Select(mapper.Map<UserView>), filter.Count());
   }
 
   public async Task<User?> GetByIdAsync(int id)
