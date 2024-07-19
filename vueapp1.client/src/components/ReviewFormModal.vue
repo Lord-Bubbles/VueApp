@@ -1,7 +1,9 @@
 <script setup>
   import { useMutation, useQueryClient } from '@tanstack/vue-query';
-  import { ref } from 'vue';
   import { createPerformance } from '@/utils/performanceService';
+  import { array, number, object, string } from 'yup';
+  import { FieldArray, useForm, Field, ErrorMessage } from 'vee-validate';
+  import { useToast } from 'vue-toastification';
 
   const props = defineProps({
     type: {
@@ -18,21 +20,49 @@
   const { mutate } = useMutation({
     mutationFn: (params) => createPerformance(params),
     onSuccess: async () => {
-      return await queryClient.invalidateQueries({ queryKey: ['performances'] });
+      modal.value = false;
+      return await queryClient.invalidateQueries({
+        queryKey: ['performances'],
+        refetchType: 'all'
+      });
+    },
+    onError: () => {
+      const toast = useToast();
+      toast.error('An error has occurred while creating performance review');
     }
   });
 
-  const formData = ref({
-    rating: 0,
-    goals: [''],
-    improve: [''],
-    well: ['']
-  });
   const modal = defineModel({ required: true, type: Boolean });
 
-  const addReview = () => {
-    mutate({ ...formData.value, userID: props.userID, type: props.type });
+  const schema = object().shape({
+    rating: number().moreThan(0, ({ more }) => `Rating must be greater than ${more}`),
+    goals: array(string().required('Goal field can not be empty')).min(
+      1,
+      ({ min }) => `There must be at least ${min} goal`
+    ),
+    improve: array(string().required('Improve field can not be empty')).min(
+      1,
+      ({ min }) => `There must be at least ${min} point of improvement`
+    ),
+    well: array(string().required('Well field can not be empty')).min(
+      1,
+      ({ min }) => `There must be at least ${min} point you did well`
+    )
+  });
+
+  const initialValues = {
+    rating: 0
   };
+
+  const { isSubmitting, handleSubmit, values, setFieldValue } = useForm({
+    validationSchema: schema,
+    initialValues,
+    validateOnMount: false
+  });
+
+  const addReview = handleSubmit((values) => {
+    mutate({ ...values, userID: props.userID, type: props.type });
+  });
 </script>
 
 <template>
@@ -49,7 +79,7 @@
           <button type="button" class="btn-close" @click="() => (modal = false)"></button>
         </div>
         <div class="modal-body">
-          <form @submit.prevent="addReview">
+          <form @submit="addReview">
             <div class="mb-3">
               <label class="form-label">Performance Rating: </label>
               <div class="d-inline-flex flex-wrap ms-1 text-secondary">
@@ -58,112 +88,102 @@
                   v-for="n in 5"
                   :key="'star-' + n"
                   class="bg-transparent border-0 p-0"
-                  :class="{ 'text-black': n <= formData.rating }"
-                  @click="() => (formData.rating = n)"
+                  :class="{ 'text-black': n <= values.rating }"
+                  @click="setFieldValue('rating', n)"
                 >
                   &#9733;
                 </div>
               </div>
+              <ErrorMessage class="d-block text-danger" name="rating" />
             </div>
             <div class="mb-3">
-              <div class="d-flex">
-                <label class="form-label">Goals</label>
-                <button
-                  type="button"
-                  class="btn btn-primary rounded-circle ms-2 btn-sm"
-                  @click="() => formData.goals.push([''])"
-                >
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-              <div
-                class="d-flex justify-content-evenly mb-1"
-                v-for="(_, index) in formData.goals"
-                :key="'goal-' + index"
-              >
-                <input
-                  type="text"
-                  class="form-control"
-                  @input="(e) => (formData.goals[index] = e.target.value)"
-                  :value="formData.goals[index]"
-                  required
-                  minlength="1"
-                />
-                <button
-                  type="button"
-                  class="btn btn-danger rounded-circle"
-                  @click="() => formData.goals.splice(index, 1)"
-                >
-                  <i class="bi bi-dash-lg"></i>
-                </button>
-              </div>
+              <FieldArray name="goals" v-slot="{ fields, push, remove }">
+                <div class="d-flex">
+                  <label class="form-label">Goals</label>
+                  <button
+                    type="button"
+                    class="btn btn-primary rounded-circle ms-2 btn-sm"
+                    @click="push('')"
+                  >
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+                <div v-for="(field, index) in fields" :key="field.key" class="mb-1">
+                  <div class="d-flex justify-content-evenly">
+                    <Field type="text" class="form-control" :name="`goals[${index}]`" />
+                    <button
+                      type="button"
+                      class="btn btn-danger rounded-circle"
+                      @click="remove(index)"
+                    >
+                      <i class="bi bi-dash-lg"></i>
+                    </button>
+                  </div>
+                  <ErrorMessage :name="`goals[${index}]`" class="text-danger" />
+                </div>
+              </FieldArray>
+              <ErrorMessage name="goals" class="text-danger" />
             </div>
             <div class="mb-3">
-              <div class="d-flex">
-                <label class="form-label">Things Did Well</label>
-                <button
-                  type="button"
-                  class="btn btn-primary rounded-circle btn-sm ms-2"
-                  @click="() => formData.well.push([''])"
-                >
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-              <div
-                class="d-flex justify-content-evenly mb-1"
-                v-for="(_, index) in formData.well"
-                :key="'well-' + index"
-              >
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="formData.well[index]"
-                  required
-                  minlength="1"
-                />
-                <button
-                  type="button"
-                  class="btn btn-danger rounded-circle"
-                  @click="() => formData.well.splice(index, 1)"
-                >
-                  <i class="bi bi-dash-lg"></i>
-                </button>
-              </div>
+              <FieldArray name="well" v-slot="{ fields, push, remove }">
+                <div class="d-flex">
+                  <label class="form-label">Things Did Well</label>
+                  <button
+                    type="button"
+                    class="btn btn-primary rounded-circle btn-sm ms-2"
+                    @click="push('')"
+                  >
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+                <div v-for="(field, index) in fields" :key="field.key" class="mb-1">
+                  <div class="d-flex justify-content-evenly">
+                    <Field type="text" class="form-control" :name="`well[${index}]`" />
+                    <button
+                      type="button"
+                      class="btn btn-danger rounded-circle"
+                      @click="remove(index)"
+                    >
+                      <i class="bi bi-dash-lg"></i>
+                    </button>
+                  </div>
+                  <ErrorMessage :name="`well[${index}]`" class="text-danger" />
+                </div>
+              </FieldArray>
+              <ErrorMessage name="well" class="text-danger" />
             </div>
             <div class="mb-3">
-              <div class="d-flex">
-                <label class="form-label">Things to Improve</label>
-                <button
-                  type="button"
-                  class="btn btn-primary rounded-circle ms-2 btn-sm"
-                  @click="() => formData.improve.push([''])"
-                >
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-              <div
-                class="d-flex justify-content-evenly mb-1"
-                v-for="(_, index) in formData.improve"
-                :key="'improve-' + index"
-              >
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="formData.improve[index]"
-                  required
-                  minlength="1"
-                />
-                <button
-                  type="button"
-                  class="btn btn-danger rounded-circle ms-2"
-                  @click="() => formData.improve.splice(index, 1)"
-                >
-                  <i class="bi bi-dash-lg"></i>
-                </button>
-              </div>
+              <FieldArray name="improve" v-slot="{ fields, push, remove }">
+                <div class="d-flex">
+                  <label class="form-label">Things to Improve</label>
+                  <button
+                    type="button"
+                    class="btn btn-primary rounded-circle ms-2 btn-sm"
+                    @click="push('')"
+                  >
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+                <div class="mb-1" v-for="(field, index) in fields" :key="field.key">
+                  <div class="d-flex justify-content-evenly mb-1">
+                    <Field type="text" class="form-control" :name="`improve[${index}]`" />
+                    <button
+                      type="button"
+                      class="btn btn-danger rounded-circle ms-2"
+                      @click="remove(index)"
+                    >
+                      <i class="bi bi-dash-lg"></i>
+                    </button>
+                  </div>
+                  <ErrorMessage :name="`improve[${index}]`" class="text-danger" />
+                </div>
+              </FieldArray>
+              <ErrorMessage name="improve" class="text-danger" />
             </div>
             <div class="d-flex justify-content-center">
-              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="submit" class="btn btn-primary">
+                {{ isSubmitting ? 'Creating...' : 'Create' }}
+              </button>
             </div>
           </form>
         </div>

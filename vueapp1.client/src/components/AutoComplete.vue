@@ -1,15 +1,21 @@
 <script setup>
   import { getUsers } from '@/utils/userService';
   import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-  import { computed, ref, watchEffect } from 'vue';
-  import { useRoute, useRouter } from 'vue-router';
+  import { computed } from 'vue';
   import { useAuthStore } from '@/stores/authStore';
+  import { useField } from 'vee-validate';
 
-  const manager = defineModel({ required: true, type: String });
-  const route = useRoute();
-  const router = useRouter();
-  const name = ref(manager.value);
+  const props = defineProps({
+    name: {
+      type: String,
+      required: true
+    }
+  });
   const authStore = useAuthStore();
+
+  const emit = defineEmits(['update']);
+
+  const { value: name, errorMessage } = useField(() => props.name);
 
   const params = {
     type: 'Manager',
@@ -20,8 +26,6 @@
     maxAge: 0,
     email: ''
   };
-
-  watchEffect(() => (name.value = manager.value));
 
   const { data } = useQuery({
     queryKey: ['users', { name: name.value }],
@@ -37,6 +41,11 @@
       return u;
     })
   );
+
+  const updateManager = (string) => {
+    name.value = string;
+    emit('update', string);
+  };
 </script>
 
 <template>
@@ -51,22 +60,11 @@
         data-bs-toggle="dropdown"
         data-bs-display="static"
       />
-      <ul v-show="data.users.length" class="dropdown-menu w-100 overflow-auto mb-0">
+      <ul v-show="filteredUsers.length" class="dropdown-menu w-100 overflow-auto mb-0">
         <li
           v-for="user in filteredUsers"
           :key="user.id"
-          @click="
-            {
-              const fullName = user.firstName + ' ' + user.lastName;
-              manager = fullName;
-              name = fullName;
-              const query = Object.assign({}, route.query);
-              query.managerName = fullName;
-              router.replace({
-                query
-              });
-            }
-          "
+          @click="updateManager(user.firstName + ' ' + user.lastName)"
         >
           <button type="button" class="dropdown-item">
             {{ user.firstName + ' ' + user.lastName }}
@@ -74,5 +72,6 @@
         </li>
       </ul>
     </div>
+    <span class="text-danger">{{ errorMessage }}</span>
   </div>
 </template>
