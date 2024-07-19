@@ -62,47 +62,45 @@
   <section class="container">
     <h1 class="mb-3">All Users</h1>
     <SearchAndFilter v-model="filterData" />
-    <div v-if="data && data.count > 0" class="table-responsive">
-      <table class="table table-striped table-hover table-bordered table-dark">
-        <thead>
-          <tr>
-            <th v-for="field in headers" :key="field">
-              {{ field }}
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) of data.users" :key="user.id">
-            <td v-for="field in Object.keys(user).slice(1)" :key="field + '-' + index">
-              {{ displayData(user, field) }}
-            </td>
-            <td>
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-target="#formModal"
-                @click="() => handleClick('edit', user)"
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger"
-                @click="() => handleClick('delete', user)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <UserFormModal v-if="modal" :mode="mode" :data="modalData" v-model="modal" />
+    <section v-if="data && data.count > 0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered table-dark">
+          <thead>
+            <tr>
+              <th v-for="field in headers" :key="field">
+                {{ field }}
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(user, index) of data.users" :key="user.id">
+              <td v-for="field in Object.keys(user)" :key="field + '-' + index">
+                {{ user[field] }}
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-target="#formModal"
+                  @click="handleClick('edit', user)"
+                >
+                  Edit
+                </button>
+                <button type="button" class="btn btn-danger" @click="handleClick('delete', user)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <Pagination
         v-model:page.number="filterData.page"
         v-model:limit.number="filterData.limit"
         v-model:count="data.count"
       />
-    </div>
+    </section>
+    <UserFormModal v-if="modal" :mode="mode" :data="modalData" v-model="modal" />
   </section>
 </template>
