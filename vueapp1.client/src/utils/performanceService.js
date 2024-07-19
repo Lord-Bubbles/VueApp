@@ -4,7 +4,7 @@ import { fetchIntercept } from './fetchIntercept';
 const toast = useToast();
 
 export async function getPerformances(query) {
-  const { response, data } = fetchIntercept(
+  const { response, data } = await fetchIntercept(
     `/api/Performance?user=${query.user}&type=${query.type}&page=${query.page}&limit=${query.limit}`
   );
   if (!response.ok) {
@@ -14,7 +14,7 @@ export async function getPerformances(query) {
 }
 
 export async function createPerformance(formData) {
-  const { response } = fetchIntercept('/api/Performance', {
+  const { response } = await fetchIntercept('/api/Performance', {
     method: 'POST',
     body: JSON.stringify(formData)
   });
