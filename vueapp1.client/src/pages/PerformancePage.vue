@@ -67,98 +67,99 @@
         <i class="bi bi-plus"></i>
       </button>
     </div>
-    <div
-      class="row row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 row-cols-md-3 row-cols-1 row-cols-sm-2 g-4 mb-4"
-      v-if="data && data.count > 0"
-    >
-      <div class="col" v-for="(performance, index) in data.performances" :key="performance.id">
-        <div class="card">
-          <div class="card-header">
-            {{ new Date(performance.createdAt).toLocaleString('en-US') }}
-          </div>
-          <div class="card-body">
-            <div class="card-text mb-3">
-              Rating:
-              <div class="d-inline-flex flex-wrap ms-1 text-secondary">
-                <span
-                  :class="{ 'text-black': n <= performance.rating }"
-                  v-for="n in 5"
-                  :key="performance.id + '-star-' + n"
-                >
-                  &#9733;
-                </span>
-              </div>
+    <section v-if="data && data.count > 0">
+      <div
+        class="row row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 row-cols-md-3 row-cols-1 row-cols-sm-2 g-4 mb-4"
+      >
+        <div class="col" v-for="(performance, index) in data.performances" :key="performance.id">
+          <div class="card">
+            <div class="card-header">
+              {{ new Date(performance.createdAt).toLocaleString('en-US') }}
             </div>
-            <div class="accordion">
-              <div class="accordion-item">
-                <div class="accordion-header">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    :data-bs-target="'#performance-goals-' + index"
+            <div class="card-body">
+              <div class="card-text mb-3">
+                Rating:
+                <div class="d-inline-flex flex-wrap ms-1 text-secondary">
+                  <span
+                    :class="{ 'text-black': n <= performance.rating }"
+                    v-for="n in 5"
+                    :key="performance.id + '-star-' + n"
                   >
-                    Goals
-                  </button>
-                </div>
-                <div :id="'performance-goals-' + index" class="accordion-collapse collapse">
-                  <div class="accordion-body">
-                    <ul>
-                      <li
-                        v-for="(goal, idx) in performance.goals"
-                        :key="performance.id + '-goals-' + idx"
-                      >
-                        {{ goal }}
-                      </li>
-                    </ul>
-                  </div>
+                    &#9733;
+                  </span>
                 </div>
               </div>
-              <div class="accordion-item">
-                <div class="accordion-header">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    :data-bs-target="'#things-to-improve-' + index"
-                  >
-                    Things to Improve
-                  </button>
-                </div>
-                <div :id="'things-to-improve-' + index" class="accordion-collapse collapse">
-                  <div class="accordion-body">
-                    <ul>
-                      <li
-                        v-for="(improve, idx) in performance.improve"
-                        :key="performance.id + '-improve-' + idx"
-                      >
-                        {{ improve }}
-                      </li>
-                    </ul>
+              <div class="accordion">
+                <div class="accordion-item">
+                  <div class="accordion-header">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      :data-bs-target="'#performance-goals-' + index"
+                    >
+                      Goals
+                    </button>
+                  </div>
+                  <div :id="'performance-goals-' + index" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                      <ul>
+                        <li
+                          v-for="(goal, idx) in performance.goals"
+                          :key="performance.id + '-goals-' + idx"
+                        >
+                          {{ goal }}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div class="accordion-item">
-                <div class="accordion-header">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    :data-bs-target="'#things-did-well-' + index"
-                  >
-                    Things did well
-                  </button>
+                <div class="accordion-item">
+                  <div class="accordion-header">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      :data-bs-target="'#things-to-improve-' + index"
+                    >
+                      Things to Improve
+                    </button>
+                  </div>
+                  <div :id="'things-to-improve-' + index" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                      <ul>
+                        <li
+                          v-for="(improve, idx) in performance.improve"
+                          :key="performance.id + '-improve-' + idx"
+                        >
+                          {{ improve }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                <div :id="'things-did-well-' + index" class="accordion-collapse collapse">
-                  <div class="accordion-body">
-                    <ul>
-                      <li
-                        v-for="(well, idx) in performance.well"
-                        :key="performance.id + '-well-' + idx"
-                      >
-                        {{ well }}
-                      </li>
-                    </ul>
+                <div class="accordion-item">
+                  <div class="accordion-header">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      :data-bs-target="'#things-did-well-' + index"
+                    >
+                      Things did well
+                    </button>
+                  </div>
+                  <div :id="'things-did-well-' + index" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+                      <ul>
+                        <li
+                          v-for="(well, idx) in performance.well"
+                          :key="performance.id + '-well-' + idx"
+                        >
+                          {{ well }}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
