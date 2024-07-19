@@ -1,6 +1,7 @@
 <script setup>
   import { useAuthStore } from '@/stores/authStore';
   import { Field, ErrorMessage, useForm } from 'vee-validate';
+  import { useToast } from 'vue-toastification';
   import { object, string } from 'yup';
 
   const { isSubmitting, setFieldError, handleSubmit } = useForm({
@@ -13,10 +14,15 @@
 
   const loginUser = handleSubmit(async (values) => {
     const authStore = useAuthStore();
+    const toast = useToast();
     try {
       await authStore.login(values);
-    } catch {
-      setFieldError('form', 'Incorrect username or password');
+    } catch (error) {
+      if (error.message == 'Bad Request') {
+        setFieldError('form', 'Incorrect username or password');
+      } else {
+        toast.error('An error has occurred while logging in');
+      }
     }
   });
 </script>
