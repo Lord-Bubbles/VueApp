@@ -7,15 +7,15 @@ public class Performance
 {
   public int ID { get; set; }
 
-  public string[] Goals { get; set; } = [];
+  public string[] Goals { get; set; }
 
-  public string[] Improve { get; set; } = [];
+  public string[] Improve { get; set; }
 
-  public string[] Well { get; set; } = [];
+  public string[] Well { get; set; }
 
   public int Rating { get; set; }
 
-  public string Type { get; set; } = "";
+  public string Type { get; set; }
 
   public int UserID { get; set; }
 
