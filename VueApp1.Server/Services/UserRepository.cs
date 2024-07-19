@@ -72,7 +72,7 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
 
   public async Task<User> UpdateAsync(int id, UpdateRequest entity)
   {
-    var user = await context.Users.FindAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
+    var user = await GetByIdAsync(id) ?? throw new KeyNotFoundException("User doesn't exist!");
 
     if (!string.IsNullOrEmpty(entity.Password))
     {
