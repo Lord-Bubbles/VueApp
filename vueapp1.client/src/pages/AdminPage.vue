@@ -98,7 +98,7 @@
       <Pagination
         v-model:page.number="filterData.page"
         v-model:limit.number="filterData.limit"
-        v-model:count="data.count"
+        v-model:count.number="data.count"
       />
     </section>
     <UserFormModal v-if="modal" :mode="mode" :data="modalData" v-model="modal" />
