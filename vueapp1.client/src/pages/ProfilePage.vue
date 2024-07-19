@@ -4,6 +4,7 @@
   import { storeToRefs } from 'pinia';
   import { date, object, ref, string } from 'yup';
   import { Form, Field, ErrorMessage } from 'vee-validate';
+  import { useToast } from 'vue-toastification';
 
   const authStore = useAuthStore();
   const { user } = storeToRefs(authStore);
@@ -33,7 +34,14 @@
   };
 
   const saveData = async (values) => {
-    await updateUser(authStore.user.id, values);
+    const toast = useToast();
+    try {
+      await updateUser(authStore.user.id, values);
+    } catch (error) {
+      if (error.message != 'Bad Request') {
+        toast.error('An error occurred while updating profile');
+      }
+    }
   };
 </script>
 
