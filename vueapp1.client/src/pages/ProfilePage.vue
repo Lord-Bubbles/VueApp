@@ -52,6 +52,7 @@
       :validation-schema="schema"
       :validate-on-mount="false"
       :initial-values="initialValues"
+      v-slot="{ isSubmitting }"
     >
       <div class="row mb-3">
         <div class="col">
@@ -98,7 +99,9 @@
           <ErrorMessage class="text-danger" name="confirmPassword" />
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <button type="submit" class="btn btn-primary">
+        {{ isSubmitting ? 'Saving changes...' : 'Save changes' }}
+      </button>
     </Form>
   </div>
 </template>
