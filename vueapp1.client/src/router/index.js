@@ -60,9 +60,7 @@ router.beforeEach(async (to) => {
       } catch {
         // Invalid refresh token so redirect to login page
         return {
-          name: 'login',
-          // save the location we were at to come back later
-          query: { redirect: to.fullPath }
+          name: 'login'
         };
       }
     }
