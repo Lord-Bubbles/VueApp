@@ -89,6 +89,15 @@ public class UserRepository(AppDbContext context, IJwtUtils jwtUtils, IMapper ma
     {
       user.Age -= 1;
     }
+    if (!string.IsNullOrEmpty(entity.Email) && entity.Email != user.Email)
+    {
+      var exists = await context.Users.FirstOrDefaultAsync(u => u.Email == entity.Email);
+      if (exists != null)
+      {
+        throw new ApplicationException("User with this email already exists!");
+      }
+    }
+
     mapper.Map(entity, user);
     context.SaveChanges();
     return user;
