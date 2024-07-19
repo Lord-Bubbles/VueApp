@@ -19,7 +19,7 @@ public class Performance
 
   public int UserID { get; set; }
 
-  public DateTime CreatedAt { get; set; } = new();
+  public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class PerformanceParameters : QueryParameters
