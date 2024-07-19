@@ -3,9 +3,19 @@
   import { computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
 
-  const limit = defineModel('limit', { required: true, type: Number });
-  const page = defineModel('page', { required: true, type: Number });
-  const count = defineModel('count', { required: true, type: Number });
+  const limit = defineModel('limit', {
+    required: true,
+    type: Number
+  });
+  const page = defineModel('page', {
+    required: true,
+    type: Number
+  });
+  const count = defineModel('count', {
+    required: true,
+    type: Number
+  });
+
   const route = useRoute();
   const router = useRouter();
 
