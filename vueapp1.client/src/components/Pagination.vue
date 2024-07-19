@@ -66,26 +66,20 @@
     let middleRange = range(leftSiblingIndex, rightSiblingIndex);
     return [firstPageIndex, DOTS, ...middleRange, DOTS, lastPageIndex];
   });
+
+  const updatePageQuery = (num) => {
+    page.value = num;
+    const query = Object.assign({}, route.query);
+    query.page = num;
+    router.replace({ query });
+  };
 </script>
 
 <template>
   <nav v-if="paginationRange.length > 1" class="container-fluid">
     <ul class="pagination d-flex justify-content-center">
       <li class="page-item" :class="{ disabled: page == 1 }">
-        <button
-          class="page-link"
-          type="button"
-          @click="
-            () => {
-              page = page - 1;
-              const query = Object.assign({}, route.query);
-              query.page = page - 1;
-              router.replace({ query });
-            }
-          "
-        >
-          &laquo;
-        </button>
+        <button class="page-link" type="button" @click="updatePageQuery(page - 1)">&laquo;</button>
       </li>
       <li
         class="page-item"
@@ -94,19 +88,7 @@
         :key="num + '-' + index"
       >
         <button class="page-link" type="button" v-if="num === DOTS">&#8230;</button>
-        <button
-          class="page-link"
-          type="button"
-          @click="
-            () => {
-              page = num;
-              const query = Object.assign({}, route.query);
-              query.page = num;
-              router.replace({ query });
-            }
-          "
-          v-else
-        >
+        <button class="page-link" type="button" @click="updatePageQuery(num)" v-else>
           {{ num }}
         </button>
       </li>
@@ -114,20 +96,7 @@
         class="page-item"
         :class="{ disabled: page == paginationRange[paginationRange.length - 1] }"
       >
-        <button
-          class="page-link"
-          type="button"
-          @click="
-            () => {
-              page = page + 1;
-              const query = Object.assign({}, route.query);
-              query.page = page + 1;
-              router.replace({ query });
-            }
-          "
-        >
-          &raquo;
-        </button>
+        <button class="page-link" type="button" @click="updatePageQuery(page + 1)">&raquo;</button>
       </li>
     </ul>
   </nav>
