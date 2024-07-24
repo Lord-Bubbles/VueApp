@@ -18,7 +18,17 @@
   });
   const modal = defineModel({ required: true, type: Boolean });
 
-  const { isSubmitting, handleSubmit, setFieldError } = useForm({
+  const initialValues = {
+    firstName: props.data?.firstName,
+    lastName: props.data?.lastName,
+    email: props.data?.email,
+    birthday: props.data?.birthday,
+    phoneNum: props.data?.phoneNum,
+    accountType: props.data?.accountType,
+    managerName: props.data?.managerName
+  };
+
+  const { isSubmitting, handleSubmit, setFieldError, setFieldValue } = useForm({
     validateOnMount: false,
     validationSchema: object().shape({
       firstName: string().required('First name is required'),
@@ -31,15 +41,7 @@
       }),
       managerName: string().required('Manager name is required')
     }),
-    initialValues: {
-      firstName: props.data?.firstName,
-      lastName: props.data?.lastName,
-      email: props.data?.email,
-      birthday: props.data?.birthday,
-      phoneNum: props.data?.phoneNum,
-      accountType: props.data?.accountType,
-      managerName: props.data?.managerName
-    }
+    initialValues
   });
 
   const queryClient = useQueryClient();
