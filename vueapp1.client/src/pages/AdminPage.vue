@@ -52,21 +52,21 @@
   <section class="w-75">
     <h1 class="mb-3">All Users</h1>
     <SearchAndFilter v-model="filterData" />
-    <section v-if="data && data.count > 0">
+    <section v-if="data?.count > 0">
       <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered table-dark">
           <thead>
             <tr>
-              <th v-for="field in headers" :key="field">
+              <th v-for="(field, index) in headers" :key="field + '-' + index">
                 {{ field }}
               </th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(user, index) of data.users" :key="user.id">
-              <td v-for="field in Object.keys(user)" :key="field + '-' + index">
-                {{ user[field] }}
+            <tr v-for="(user, index) in data.users" :key="user.id">
+              <td v-for="(value, key) in user" :key="key + '-' + index">
+                {{ value }}
               </td>
               <td>
                 <button
