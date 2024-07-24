@@ -131,11 +131,14 @@
                 </div>
                 <div class="col">
                   <label class="form-label">Employee Type</label>
-                  <Field as="select" class="form-select" name="accountType">
+                  <select
+                    class="form-select"
+                    @change="(e) => setFieldValue('accountType', e.target.value)"
+                  >
                     <option>Admin</option>
                     <option>Manager</option>
                     <option>Employee</option>
-                  </Field>
+                  </select>
                   <ErrorMessage class="text-danger" name="accountType" />
                 </div>
               </div>
