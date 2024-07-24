@@ -49,7 +49,7 @@
 </script>
 
 <template>
-  <section class="container">
+  <section class="w-75">
     <h1 class="mb-3">All Users</h1>
     <SearchAndFilter v-model="filterData" />
     <section v-if="data && data.count > 0">
@@ -71,8 +71,7 @@
               <td>
                 <button
                   type="button"
-                  class="btn btn-primary"
-                  data-bs-target="#formModal"
+                  class="btn btn-primary me-2"
                   @click="handleClick('edit', user)"
                 >
                   Edit
