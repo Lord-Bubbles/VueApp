@@ -39,7 +39,7 @@
       await updateUser(authStore.user.id, values);
     } catch (error) {
       if (error.message != 'Bad Request') {
-        toast.error('An error occurred while updating profile');
+        toast.error('An unexpected error occurred while updating profile');
       }
     }
   };

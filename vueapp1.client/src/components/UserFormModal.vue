@@ -60,7 +60,7 @@
       if (error.message == 'Bad Request') {
         setFieldError('email', 'A user with this email already exists');
       } else {
-        toast.error('An error has occurred while modifying user');
+        toast.error('An unexpected error has occurred while modifying user');
       }
     }
   });

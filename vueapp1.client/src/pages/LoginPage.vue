@@ -21,7 +21,7 @@
       if (error.message == 'Bad Request') {
         setFieldError('form', 'Incorrect username or password');
       } else {
-        toast.error('An error has occurred while logging in');
+        toast.error('An unexpected error has occurred while logging in');
       }
     }
   });

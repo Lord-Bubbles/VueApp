@@ -28,7 +28,7 @@
     },
     onError: () => {
       const toast = useToast();
-      toast.error('An error has occurred while creating performance review');
+      toast.error('An unexpected error has occurred while creating performance review');
     }
   });
 
