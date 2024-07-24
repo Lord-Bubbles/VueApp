@@ -118,9 +118,9 @@
                 <Field class="form-control" name="email" />
                 <ErrorMessage class="text-danger" name="email" />
               </div>
-              <div class="row mb-3">
+              <div class="mb-3">
                 <label class="form-label">Phone Number</label>
-                <Field type="tel" class="form-control" name="phoneNum" />
+                <Field class="form-control" name="phoneNum" />
                 <ErrorMessage class="text-danger" name="phoneNum" />
               </div>
               <div class="row mb-3">
