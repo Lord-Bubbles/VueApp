@@ -51,7 +51,10 @@
   });
 
   const initialValues = {
-    rating: 0
+    rating: 0,
+    goals: [],
+    improve: [],
+    well: []
   };
 
   const { isSubmitting, handleSubmit, values, setFieldValue } = useForm({
