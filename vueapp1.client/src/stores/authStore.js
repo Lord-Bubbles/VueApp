@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     await fetch('/api/Auth/logout', {
-      method: 'DELETE',
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token.value}`
       }

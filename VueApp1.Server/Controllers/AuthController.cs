@@ -47,7 +47,7 @@ namespace VueApp1.Server.Controllers
       return Ok(response);
     }
 
-    [HttpDelete("logout"), Authorize]
+    [HttpPost("logout"), Authorize]
     public IActionResult Logout()
     {
       var user = (User)HttpContext.Items["User"];
