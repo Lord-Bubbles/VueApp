@@ -35,39 +35,45 @@
 </script>
 
 <template>
-  <div class="container-fluid">
-    <div class="container-fluid d-flex justify-content-around m-4 p-4">
-      <div></div>
+  <section>
+    <div class="d-flex justify-content-around mx-md-4 my-4 px-md-4 py-4 mx-sm-0 px-sm-0">
+      <div class="placeholder"></div>
       <div class="d-flex flex-shrink-1">
         <button
           type="button"
-          class="btn btn-outline-light rounded-start-pill btn-lg"
-          :class="{ active: params.type === 'self' }"
+          class="btn btn-outline-light rounded-start-pill"
+          :class="{
+            active: params.type === 'self'
+          }"
           @click="updateQuery('self', 'type')"
         >
           Self Reviews
         </button>
         <button
           type="button"
-          class="btn btn-outline-light rounded-end-pill btn-lg"
-          :class="{ active: params.type === 'manager' }"
+          class="btn btn-outline-light rounded-end-pill"
+          :class="{
+            active: params.type === 'manager'
+          }"
           @click="() => updateQuery('manager', 'type')"
         >
           Manager Reviews
         </button>
       </div>
       <button
-        class="btn btn-primary rounded-circle btn-lg"
-        :class="{ invisible: params.type == 'manager' }"
+        class="btn bg-transparent text-white fs-2 border border-0"
+        :class="{
+          invisible: params.type == 'manager'
+        }"
         @click="() => (modal = true)"
         data-bs-toggle="tooltip"
-        data-bs-placement="top"
+        data-bs-placement="bottom"
         data-bs-title="Add Review"
       >
         <i class="bi bi-plus"></i>
       </button>
     </div>
-    <section v-if="data && data.count > 0">
+    <section v-if="data?.count > 0">
       <div
         class="row row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 row-cols-md-3 row-cols-1 row-cols-sm-2 g-4 mb-4"
       >
@@ -174,5 +180,16 @@
       />
     </section>
     <ReviewFormModal v-if="modal" :type="params.type" :userID="authStore.user.id" v-model="modal" />
-  </div>
+  </section>
 </template>
+
+<style scoped>
+  .placeholder {
+    visibility: hidden;
+  }
+  @media (width <= 576px) {
+    .placeholder {
+      display: none;
+    }
+  }
+</style>
