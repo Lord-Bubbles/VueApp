@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import router from '@/router/index';
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref({});
+  const user = ref(null);
   const token = ref(null);
 
   async function login(form) {
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
     });
     token.value = null;
-    user.value = {};
+    user.value = null;
     await router.replace({ name: 'login' });
   }
 
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
     });
     if (!response.ok) {
       console.log('Error: invalid refresh token!');
-      user.value = {};
+      user.value = null;
       token.value = null;
       throw new Error();
     }
