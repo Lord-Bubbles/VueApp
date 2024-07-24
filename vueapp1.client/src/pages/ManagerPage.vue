@@ -10,9 +10,6 @@
   const modal = ref(false);
   const user = ref(0);
 
-  const headers = ['First Name', 'Last Name', 'Age', 'Email', 'Birthday', 'Phone Number'];
-  const fields = ['firstName', 'lastName', 'age', 'email', 'birthday', 'phoneNumber'];
-
   const params = {
     name: '',
     minAge: 0,
@@ -24,10 +21,32 @@
     limit: 1000
   };
 
+  const headers = ['ID', 'First Name', 'Last Name', 'Age', 'Email', 'Birthday', 'Phone Number'];
+
+  const transformData = (data) => {
+    const users = data.users.map(
+      (u) =>
+        new Object({
+          id: u.id,
+          firstName: u.firstName,
+          lastName: u.lastName,
+          age: u.age,
+          email: u.email,
+          birthday: u.birthday,
+          phoneNumber: u.phoneNumber
+        })
+    );
+    return {
+      ...data,
+      users
+    };
+  };
+
   const { data } = useQuery({
-    queryKey: ['users'],
+    queryKey: ['users', params],
     queryFn: () => getUsers(params),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    select: (data) => transformData(data)
   });
 
   const setUser = (id) => {
@@ -37,22 +56,22 @@
 </script>
 
 <template>
-  <section class="container m-4 p-4">
+  <section class="w-75">
     <h1 class="mb-3">My Team Members</h1>
-    <div v-if="data && data.count > 0" class="table-responsive">
+    <div v-if="data?.count" class="table-responsive">
       <table class="table table-striped table-hover table-bordered table-dark">
         <thead>
           <tr>
-            <th v-for="field in headers" :key="'team-' + field">
+            <th v-for="(field, index) in headers" :key="field + '-' + index">
               {{ field }}
             </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) of data.users" :key="user.id">
-            <td v-for="field in fields" :key="field + '-' + index">
-              {{ user[field] }}
+          <tr v-for="(user, index) in data.users" :key="user.id">
+            <td v-for="(value, key) in user" :key="key + '-' + index">
+              {{ value }}
             </td>
             <td>
               <button class="btn btn-primary" type="button" @click="setUser(user.id)">
