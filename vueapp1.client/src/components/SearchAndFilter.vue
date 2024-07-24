@@ -76,7 +76,7 @@
         >
           <i class="bi bi-list"></i>
         </button>
-        <div class="dropdown-menu dropdown-menu-end p-4 text-bg-dark" style="width: 30rem">
+        <div class="dropdown-menu dropdown-menu-end p-4 text-bg-dark filter-width">
           <div class="row mb-3">
             <div class="col">
               <label class="form-label">Min Age</label>
@@ -121,3 +121,15 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  .filter-width {
+    width: 25rem;
+  }
+
+  @media (width <= 576px) {
+    .filter-width {
+      width: 20rem;
+    }
+  }
+</style>
