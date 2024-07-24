@@ -47,7 +47,7 @@
 </script>
 
 <template>
-  <div class="w-50 m-auto">
+  <div class="w-50 mx-auto">
     <Form
       @submit="saveData"
       :validation-schema="schema"
