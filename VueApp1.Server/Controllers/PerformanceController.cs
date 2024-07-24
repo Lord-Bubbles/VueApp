@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using VueApp1.Server.Models.Entities;
 using VueApp1.Server.Services;
 using VueApp1.Server.Authorization;
-
+using VueApp1.Server.Models.Enums;
 
 [ApiController]
 [Authorize]
@@ -41,7 +41,7 @@ public class PerformanceController(IPerformanceRepository repository) : Controll
   public async Task<IActionResult> CreatePerformance([FromBody] Performance performance)
   {
     var authUser = (User)HttpContext.Items["User"];
-    if (authUser.ID != performance.UserID)
+    if (authUser.AccountType != Account.Manager && authUser.ID != performance.UserID)
     {
       return Unauthorized();
     }
