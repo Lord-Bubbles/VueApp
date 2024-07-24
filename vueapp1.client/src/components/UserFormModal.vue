@@ -142,7 +142,7 @@
                   <ErrorMessage class="text-danger" name="accountType" />
                 </div>
               </div>
-              <AutoComplete name="managerName" />
+              <AutoComplete :user="props.data" />
             </div>
             <div class="d-flex justify-content-evenly my-3">
               <button

@@ -1,17 +1,15 @@
 <script setup>
   import { getUsers } from '@/utils/userService';
+  import { ref } from 'vue';
   import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-  import { computed } from 'vue';
-  import { useAuthStore } from '@/stores/authStore';
   import { useField } from 'vee-validate';
 
   const props = defineProps({
-    name: {
-      type: String,
-      required: true
+    user: {
+      type: Object,
+      default: undefined
     }
   });
-  const authStore = useAuthStore();
 
   const emit = defineEmits(['update']);
 
