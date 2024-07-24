@@ -88,7 +88,7 @@
                   v-for="n in 5"
                   :key="'star-' + n"
                   class="bg-transparent border-0 p-0"
-                  :class="{ 'text-black': n <= values.rating }"
+                  :class="{ 'text-black fw-bold': n <= values.rating }"
                   @click="setFieldValue('rating', n)"
                 >
                   &#9733;
@@ -98,11 +98,11 @@
             </div>
             <div class="mb-3">
               <FieldArray name="goals" v-slot="{ fields, push, remove }">
-                <div class="d-flex">
-                  <label class="form-label">Goals</label>
+                <div class="d-flex mb-1">
+                  <label class="form-label me-2">Goals</label>
                   <button
                     type="button"
-                    class="btn btn-primary rounded-circle ms-2 btn-sm"
+                    class="btn btn-primary rounded-circle btn-sm"
                     @click="push('')"
                   >
                     <i class="bi bi-plus"></i>
@@ -110,10 +110,10 @@
                 </div>
                 <div v-for="(field, index) in fields" :key="field.key" class="mb-1">
                   <div class="d-flex justify-content-evenly">
-                    <Field type="text" class="form-control" :name="`goals[${index}]`" />
+                    <Field type="text" class="form-control me-2" :name="`goals[${index}]`" />
                     <button
                       type="button"
-                      class="btn btn-danger rounded-circle"
+                      class="btn btn-danger rounded-circle btn-sm"
                       @click="remove(index)"
                     >
                       <i class="bi bi-dash-lg"></i>
@@ -126,11 +126,11 @@
             </div>
             <div class="mb-3">
               <FieldArray name="well" v-slot="{ fields, push, remove }">
-                <div class="d-flex">
-                  <label class="form-label">Things Did Well</label>
+                <div class="d-flex mb-1">
+                  <label class="form-label me-2">Things Did Well</label>
                   <button
                     type="button"
-                    class="btn btn-primary rounded-circle btn-sm ms-2"
+                    class="btn btn-primary rounded-circle btn-sm"
                     @click="push('')"
                   >
                     <i class="bi bi-plus"></i>
@@ -138,10 +138,10 @@
                 </div>
                 <div v-for="(field, index) in fields" :key="field.key" class="mb-1">
                   <div class="d-flex justify-content-evenly">
-                    <Field type="text" class="form-control" :name="`well[${index}]`" />
+                    <Field type="text" class="form-control me-2" :name="`well[${index}]`" />
                     <button
                       type="button"
-                      class="btn btn-danger rounded-circle"
+                      class="btn btn-danger rounded-circle btn-sm"
                       @click="remove(index)"
                     >
                       <i class="bi bi-dash-lg"></i>
@@ -154,11 +154,11 @@
             </div>
             <div class="mb-3">
               <FieldArray name="improve" v-slot="{ fields, push, remove }">
-                <div class="d-flex">
-                  <label class="form-label">Things to Improve</label>
+                <div class="d-flex mb-1">
+                  <label class="form-label me-2">Things to Improve</label>
                   <button
                     type="button"
-                    class="btn btn-primary rounded-circle ms-2 btn-sm"
+                    class="btn btn-primary rounded-circle btn-sm"
                     @click="push('')"
                   >
                     <i class="bi bi-plus"></i>
@@ -166,10 +166,10 @@
                 </div>
                 <div class="mb-1" v-for="(field, index) in fields" :key="field.key">
                   <div class="d-flex justify-content-evenly mb-1">
-                    <Field type="text" class="form-control" :name="`improve[${index}]`" />
+                    <Field type="text" class="form-control me-2" :name="`improve[${index}]`" />
                     <button
                       type="button"
-                      class="btn btn-danger rounded-circle ms-2"
+                      class="btn btn-danger rounded-circle btn-sm"
                       @click="remove(index)"
                     >
                       <i class="bi bi-dash-lg"></i>
