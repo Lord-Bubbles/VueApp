@@ -1,20 +1,22 @@
 <script setup>
-  //import { useQueryClient } from '@tanstack/vue-query';
   import { useRoute, useRouter } from 'vue-router';
   import AutoComplete from './AutoComplete.vue';
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
+  import { useQueryClient } from '@tanstack/vue-query';
 
   const formData = defineModel({ type: Object, required: true });
   const router = useRouter();
   const route = useRoute();
-  //const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const values = {
     max: 100,
     min: 0
   };
 
-  const reset = () => {
+  const key = ref('filter');
+
+  const reset = async () => {
     formData.value = {
       name: '',
       minAge: values.min,
@@ -24,8 +26,9 @@
       page: 1,
       limit: route.query.limit
     };
-    router.push({ name: route.name, query: { page: 1, limit: route.query.limit } });
-    //queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
+    key.value = 'reset';
+    await router.push({ name: route.name, query: { page: 1, limit: route.query.limit } });
+    await queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
   };
 
   const maxArray = computed(() => {
@@ -44,7 +47,7 @@
     return arr;
   });
 
-  const updateQuery = (val, key) => {
+  const updateQuery = async (val, key) => {
     formData.value[key] = val;
     const query = Object.assign({}, route.query);
     if ((key == 'maxAge' && formData.value[key] == values.max) || !formData.value[key]) {
@@ -53,6 +56,7 @@
       query[key] = val;
     }
     router.replace({ query });
+    await queryClient.invalidateQueries({ queryKey: ['users'], refetchType: 'all' });
   };
 </script>
 
