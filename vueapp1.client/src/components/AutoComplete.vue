@@ -13,59 +13,63 @@
 
   const emit = defineEmits(['update']);
 
-  const { value: name, errorMessage } = useField(() => props.name);
+  const { value: manager, errorMessage } = useField('managerName');
 
-  const params = {
+  const params = ref({
     type: 'Manager',
     page: 1,
     limit: 1000,
     managerName: '',
     minAge: 0,
-    maxAge: 0,
-    email: ''
+    maxAge: 100,
+    email: '',
+    name: manager.value
+  });
+
+  const transformData = (data) => {
+    const names = data.users.map(
+      (u) =>
+        new Object({ fullName: u.firstName + ' ' + u.lastName, id: u.id, accountType: u.accountType })
+    );
+    return names.filter((u) => {
+      if (props.user?.accountType == 'Manager') {
+        return u.id != props.user?.id;
+      }
+      return u;
+    });
   };
 
   const { data } = useQuery({
-    queryKey: ['users', { name: name.value }],
-    queryFn: () => getUsers({ ...params, name: name.value }),
-    placeholderData: keepPreviousData
+    queryKey: ['managers', params.value],
+    queryFn: () => getUsers(params.value),
+    placeholderData: keepPreviousData,
+    enabled: !!params.value.name,
+    select: (data) => transformData(data)
   });
 
-  const filteredUsers = computed(() =>
-    data.value?.users.filter((u) => {
-      if (authStore.user.accountType == 'Manager') {
-        return u.id != authStore.user.id;
-      }
-      return u;
-    })
-  );
-
   const updateManager = (string) => {
-    name.value = string;
+    manager.value = string;
+    params.value.name = string;
     emit('update', string);
   };
 </script>
 
 <template>
-  <div class="mb-3" v-if="data && data.users">
+  <div class="mb-3">
     <label class="form-label">Manager</label>
     <div class="position-relative">
       <input
         type="text"
         class="form-control"
-        v-model="name"
+        v-model="params.name"
         placeholder="Manager Name"
         data-bs-toggle="dropdown"
         data-bs-display="static"
       />
-      <ul v-show="filteredUsers.length" class="dropdown-menu w-100 overflow-auto mb-0">
-        <li
-          v-for="user in filteredUsers"
-          :key="user.id"
-          @click="updateManager(user.firstName + ' ' + user.lastName)"
-        >
-          <button type="button" class="dropdown-item">
-            {{ user.firstName + ' ' + user.lastName }}
+      <ul v-show="data?.length" class="dropdown-menu w-100 overflow-y-auto mb-0">
+        <li v-for="user in data" :key="user.id">
+          <button type="button" class="dropdown-item" @click="updateManager(user.fullName)">
+            {{ user.fullName }}
           </button>
         </li>
       </ul>
