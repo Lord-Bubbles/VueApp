@@ -48,7 +48,6 @@
   });
 
   const updateManager = (string) => {
-    manager.value = string;
     params.value.name = string;
     emit('update', string);
   };

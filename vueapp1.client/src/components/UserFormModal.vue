@@ -142,7 +142,10 @@
                   <ErrorMessage class="text-danger" name="accountType" />
                 </div>
               </div>
-              <AutoComplete :user="props.data" />
+              <AutoComplete
+                :user="props.data"
+                @update="(val) => setFieldValue('managerName', val)"
+              />
             </div>
             <div class="d-flex justify-content-evenly my-3">
               <button
