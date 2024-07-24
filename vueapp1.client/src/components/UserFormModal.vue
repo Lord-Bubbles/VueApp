@@ -48,7 +48,10 @@
 
   const { mutate } = useMutation({
     mutationFn: (params) => {
-      props.mode === 'delete' ? deleteUser(params) : updateUser(props.data?.id, params);
+      if (props.mode === 'delete') {
+        return deleteUser(params);
+      }
+      return updateUser(props.data?.id, params);
     },
     onSuccess: async () => {
       modal.value = false;
