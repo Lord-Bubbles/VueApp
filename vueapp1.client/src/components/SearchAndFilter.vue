@@ -99,7 +99,7 @@
               </select>
             </div>
           </div>
-          <AutoComplete name="managerName" @update="(val) => updateQuery(val, 'managerName')" />
+          <AutoComplete @update="(val) => updateQuery(val, 'managerName')" :key="key" />
           <div class="mb-3">
             <label class="form-label">Employee Type</label>
             <select
