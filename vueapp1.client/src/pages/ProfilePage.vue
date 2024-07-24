@@ -30,7 +30,8 @@
     phoneNum: user.value.phoneNum,
     birthday: user.value.birthday,
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    accountType: user.value.accountType
   };
 
   const saveData = async (values) => {
