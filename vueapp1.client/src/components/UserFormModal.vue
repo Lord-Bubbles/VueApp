@@ -28,7 +28,7 @@
     managerName: props.data?.managerName
   };
 
-  const { isSubmitting, handleSubmit, setFieldError, setFieldValue } = useForm({
+  const { isSubmitting, handleSubmit, setFieldError, setFieldValue, values } = useForm({
     validateOnMount: false,
     validationSchema: object().shape({
       firstName: string().required('First name is required'),
@@ -133,6 +133,7 @@
                   <label class="form-label">Employee Type</label>
                   <select
                     class="form-select"
+                    :value="values.accountType"
                     @change="(e) => setFieldValue('accountType', e.target.value)"
                   >
                     <option>Admin</option>
