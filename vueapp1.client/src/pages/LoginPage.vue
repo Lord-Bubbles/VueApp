@@ -29,7 +29,7 @@
 
 <template>
   <main class="center-content">
-    <div class="grid-location card p-4">
+    <div class="card p-4 m-4">
       <h1 class="d-flex justify-content-center">Login</h1>
       <form @submit="loginUser">
         <div class="mb-3">
