@@ -87,7 +87,7 @@
                 Rating:
                 <div class="d-inline-flex flex-wrap ms-1 text-secondary">
                   <span
-                    :class="{ 'text-black': n <= performance.rating }"
+                    :class="{ 'text-orange': n <= performance.rating }"
                     v-for="n in 5"
                     :key="performance.id + '-star-' + n"
                   >

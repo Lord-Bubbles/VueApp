@@ -66,6 +66,9 @@
   const addReview = handleSubmit((values) => {
     mutate({ ...values, userID: props.userID, type: props.type });
   });
+
+  // Reverse ratings to account for hover effect
+  const ratings = [5, 4, 3, 2, 1];
 </script>
 
 <template>
@@ -84,18 +87,17 @@
         <div class="modal-body">
           <form @submit="addReview">
             <div class="mb-3">
-              <label class="form-label">Performance Rating: </label>
-              <div class="d-inline-flex flex-wrap ms-1 text-secondary">
-                <!-- Add hover effect later -->
-                <div
-                  v-for="n in 5"
-                  :key="'star-' + n"
+              <label class="form-label me-1">Performance Rating: </label>
+              <div id="rating" class="d-inline-flex flex-wrap text-secondary">
+                <span
+                  v-for="num in ratings"
+                  :key="'star-' + num"
                   class="bg-transparent border-0 p-0"
-                  :class="{ 'text-black fw-bold': n <= values.rating }"
-                  @click="setFieldValue('rating', n)"
+                  :class="{ 'text-orange fw-bold': num <= values.rating }"
+                  @click="setFieldValue('rating', num)"
                 >
                   &#9733;
-                </div>
+                </span>
               </div>
               <ErrorMessage class="d-block text-danger" name="rating" />
             </div>
@@ -194,3 +196,22 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  #rating {
+    cursor: pointer;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  }
+
+  #rating > span {
+    position: relative;
+  }
+
+  #rating > span:hover::before,
+  #rating span:hover ~ span::before {
+    content: '\2605';
+    position: absolute;
+    color: orange;
+  }
+</style>
