@@ -212,6 +212,6 @@
   #rating span:hover ~ span::before {
     content: '\2605';
     position: absolute;
-    color: orange;
+    color: var(--star-color);
   }
 </style>
