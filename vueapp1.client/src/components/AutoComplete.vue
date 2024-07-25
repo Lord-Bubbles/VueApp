@@ -1,6 +1,6 @@
 <script setup>
   import { getUsers } from '@/utils/userService';
-  import { ref } from 'vue';
+  import { ref, watchEffect } from 'vue';
   import { keepPreviousData, useQuery } from '@tanstack/vue-query';
   import { useField } from 'vee-validate';
 
@@ -22,8 +22,11 @@
     managerName: '',
     minAge: 0,
     maxAge: 100,
-    email: '',
-    name: manager.value
+    email: ''
+  });
+
+  watchEffect(() => {
+    params.value.name = manager.value;
   });
 
   const transformData = (data) => {
@@ -43,13 +46,13 @@
     queryKey: ['managers', params.value],
     queryFn: () => getUsers(params.value),
     placeholderData: keepPreviousData,
-    enabled: !!params.value.name,
+    enabled: !!manager.value,
     select: (data) => transformData(data)
   });
 
-  const updateManager = (string) => {
-    params.value.name = string;
-    emit('update', string);
+  const updateManager = (val) => {
+    manager.value = val;
+    emit('update', val);
   };
 </script>
 
@@ -60,7 +63,7 @@
       <input
         type="text"
         class="form-control"
-        v-model="params.name"
+        v-model="manager"
         placeholder="Manager Name"
         data-bs-toggle="dropdown"
         data-bs-display="static"
