@@ -9,6 +9,6 @@
   background-color: '#FBFBF9';
 }
 
-.text-orange {
-  color: orange;
+.star {
+  color: var(--star-color);
 }

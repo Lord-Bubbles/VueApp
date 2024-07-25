@@ -93,7 +93,7 @@
                   v-for="num in ratings"
                   :key="'star-' + num"
                   class="bg-transparent border-0 p-0"
-                  :class="{ 'text-orange fw-bold': num <= values.rating }"
+                  :class="{ 'star fw-bold': num <= values.rating }"
                   @click="setFieldValue('rating', num)"
                 >
                   &#9733;
