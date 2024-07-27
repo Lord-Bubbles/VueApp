@@ -35,8 +35,8 @@
 </script>
 
 <template>
-  <section>
-    <div class="d-flex justify-content-around mx-md-4 my-4 px-md-4 py-4 mx-sm-0 px-sm-0">
+  <div class="performance-wrapper">
+    <section class="d-flex justify-content-around mx-md-4 my-4 px-md-4 py-4 mx-sm-0 px-sm-0">
       <div class="placeholder"></div>
       <div class="d-flex flex-shrink-1">
         <button
@@ -72,7 +72,7 @@
       >
         <i class="bi bi-plus"></i>
       </button>
-    </div>
+    </section>
     <section v-if="data?.count > 0">
       <div
         class="row row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6 row-cols-md-3 row-cols-1 row-cols-sm-2 g-4 mb-4"
@@ -180,13 +180,18 @@
       />
     </section>
     <ReviewFormModal v-if="modal" :type="params.type" :userID="authStore.user.id" v-model="modal" />
-  </section>
+  </div>
 </template>
 
 <style scoped>
   .placeholder {
     visibility: hidden;
   }
+
+  .performance-wrapper {
+    width: 85%;
+  }
+
   @media (width <= 576px) {
     .placeholder {
       display: none;
