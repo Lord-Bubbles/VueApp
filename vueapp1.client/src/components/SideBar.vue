@@ -22,132 +22,128 @@
     >
       <i class="bi bi-list"></i>
     </button>
-    <div class="h-100 position-fixed z-1 d-flex flex-column flex-shrink-0 bg-black">
-      <div id="sidebar" class="offcanvas-sm offcanvas-start bg-black" tabindex="-1">
-        <div class="offcanvas-header">
-          <button
-            type="button"
-            class="btn-close btn-close-white"
+    <div
+      id="sidebar"
+      class="offcanvas-sm offcanvas-start bg-black d-flex flex-column flex-shrink-0"
+      tabindex="-1"
+    >
+      <div class="offcanvas-header">
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          data-bs-target="#sidebar"
+        ></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="nav">
+          <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
+            <router-link
+              class="nav-link text-start text-sm-center text-lg-start"
+              :class="{
+                active: route.name == 'home',
+                'link-light': route.name != 'home',
+                'link-info': route.name == 'home'
+              }"
+              :to="{ name: 'home', params: { id: user.id } }"
+            >
+              <i class="bi bi-house-door me-2"></i>
+              <span>Home</span>
+            </router-link>
+          </li>
+          <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
+            <router-link
+              class="nav-link text-start text-sm-center text-lg-start"
+              :class="{
+                active: route.name == 'profile',
+                'link-light': route.name != 'profile',
+                'link-info': route.name == 'profile'
+              }"
+              :to="{ name: 'profile', params: { id: user.id } }"
+            >
+              <i class="bi bi-person-circle me-2"></i>
+              <span>Profile</span>
+            </router-link>
+          </li>
+          <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
+            <router-link
+              class="nav-link text-start text-sm-center text-lg-start"
+              :to="{
+                name: 'performance',
+                params: { id: user.id },
+                query: { limit: 20, page: 1, type: 'self' }
+              }"
+              :class="{
+                active: route.name == 'performance',
+                'link-light': route.name != 'performance',
+                'link-info': route.name == 'performance'
+              }"
+            >
+              <i class="bi bi-collection-fill me-2"></i>
+              <span>Reviews</span>
+            </router-link>
+          </li>
+          <li
+            class="nav-item py-2 w-100"
+            v-if="user.accountType === 'Admin'"
             data-bs-dismiss="offcanvas"
             data-bs-target="#sidebar"
-          ></button>
-        </div>
-        <div class="offcanvas-body h-100">
-          <ul class="nav">
-            <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
-              <router-link
-                class="nav-link text-start text-sm-center text-lg-start"
-                :class="{
-                  active: route.name == 'home',
-                  'link-light': route.name != 'home',
-                  'link-info': route.name == 'home'
-                }"
-                :to="{ name: 'home', params: { id: user.id } }"
-              >
-                <i class="bi bi-house-door me-2"></i>
-                <span>Home</span>
-              </router-link>
-            </li>
-            <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
-              <router-link
-                class="nav-link text-start text-sm-center text-lg-start"
-                :class="{
-                  active: route.name == 'profile',
-                  'link-light': route.name != 'profile',
-                  'link-info': route.name == 'profile'
-                }"
-                :to="{ name: 'profile', params: { id: user.id } }"
-              >
-                <i class="bi bi-person-circle me-2"></i>
-                <span>Profile</span>
-              </router-link>
-            </li>
-            <li class="nav-item py-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#sidebar">
-              <router-link
-                class="nav-link text-start text-sm-center text-lg-start"
-                :to="{
-                  name: 'performance',
-                  params: { id: user.id },
-                  query: { limit: 20, page: 1, type: 'self' }
-                }"
-                :class="{
-                  active: route.name == 'performance',
-                  'link-light': route.name != 'performance',
-                  'link-info': route.name == 'performance'
-                }"
-              >
-                <i class="bi bi-collection-fill me-2"></i>
-                <span>Reviews</span>
-              </router-link>
-            </li>
-            <li
-              class="nav-item py-2 w-100"
-              v-if="user.accountType === 'Admin'"
-              data-bs-dismiss="offcanvas"
-              data-bs-target="#sidebar"
+          >
+            <router-link
+              class="nav-link text-start text-sm-center text-lg-start"
+              :to="{ name: 'admin', params: { id: user.id }, query: { limit: 20, page: 1 } }"
+              :class="{
+                active: route.name == 'admin',
+                'link-light': route.name != 'admin',
+                'link-info': route.name == 'admin'
+              }"
             >
-              <router-link
-                class="nav-link text-start text-sm-center text-lg-start"
-                :to="{ name: 'admin', params: { id: user.id }, query: { limit: 20, page: 1 } }"
-                :class="{
-                  active: route.name == 'admin',
-                  'link-light': route.name != 'admin',
-                  'link-info': route.name == 'admin'
-                }"
-              >
-                <i class="bi bi-people-fill me-2"></i>
-                <span>Users</span>
-              </router-link>
-            </li>
-            <li
-              v-if="user.accountType === 'Manager'"
-              class="nav-item py-2 w-100"
-              data-bs-dismiss="offcanvas"
-              data-bs-target="#sidebar"
+              <i class="bi bi-people-fill me-2"></i>
+              <span>Users</span>
+            </router-link>
+          </li>
+          <li
+            v-if="user.accountType === 'Manager'"
+            class="nav-item py-2 w-100"
+            data-bs-dismiss="offcanvas"
+            data-bs-target="#sidebar"
+          >
+            <router-link
+              class="nav-link text-start text-sm-center text-lg-start"
+              :to="{ name: 'manager', params: { id: user.id } }"
+              :class="{
+                active: route.name == 'manager',
+                'link-light': route.name != 'manager',
+                'link-info': route.name == 'manager'
+              }"
             >
-              <router-link
-                class="nav-link text-start text-sm-center text-lg-start"
-                :to="{ name: 'manager', params: { id: user.id } }"
-                :class="{
-                  active: route.name == 'manager',
-                  'link-light': route.name != 'manager',
-                  'link-info': route.name == 'manager'
-                }"
-              >
-                <i class="bi bi-people-fill me-2"></i>
-                <span>Team</span>
-              </router-link>
-            </li>
-          </ul>
-          <ul id="logout" class="nav">
-            <button
-              type="button"
-              class="text-white bg-transparent border border-0 px-3 py-3"
-              @click="() => logout()"
-            >
-              <i class="bi bi-box-arrow-right me-2"></i>
-              <span>Logout</span>
-            </button>
-          </ul>
-        </div>
+              <i class="bi bi-people-fill me-2"></i>
+              <span>Team</span>
+            </router-link>
+          </li>
+          <button
+            id="logout-button"
+            type="button"
+            class="text-white bg-transparent border border-0 px-3 py-3"
+            @click="() => logout()"
+          >
+            <i class="bi bi-box-arrow-right me-2"></i>
+            <span>Logout</span>
+          </button>
+        </ul>
       </div>
     </div>
   </aside>
 </template>
 
 <style scoped>
-  #sidebar {
-    width: 12rem;
-  }
-
   .link-light:hover {
     background-color: rgb(66, 65, 65);
   }
 
-  @media (width <= 992px) {
-    #sidebar {
-      width: 5.5rem;
-    }
+  #logout-button {
+    position: absolute;
+    bottom: 0;
   }
 
   @media (width <= 576px) {
@@ -160,11 +156,5 @@
     #sidebar {
       width: 12rem;
     }
-  }
-
-  #logout {
-    display: block;
-    position: absolute;
-    bottom: 0;
   }
 </style>
