@@ -12,3 +12,7 @@
 .star {
   color: var(--star-color);
 }
+
+.content-width {
+  width: 85%;
+}
