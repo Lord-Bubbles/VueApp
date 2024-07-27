@@ -35,7 +35,7 @@
 </script>
 
 <template>
-  <div class="performance-wrapper">
+  <div class="content-width">
     <section class="d-flex justify-content-around mx-md-4 my-4 px-md-4 py-4 mx-sm-0 px-sm-0">
       <div class="placeholder"></div>
       <div class="d-flex flex-shrink-1">
@@ -186,10 +186,6 @@
 <style scoped>
   .placeholder {
     visibility: hidden;
-  }
-
-  .performance-wrapper {
-    width: 85%;
   }
 
   @media (width <= 576px) {

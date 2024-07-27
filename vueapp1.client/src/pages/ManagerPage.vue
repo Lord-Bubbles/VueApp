@@ -56,7 +56,7 @@
 </script>
 
 <template>
-  <section class="w-75">
+  <section class="content-width">
     <h1 class="mb-3">My Team Members</h1>
     <div v-if="data?.count" class="table-responsive">
       <table class="table table-striped table-hover table-bordered table-dark">

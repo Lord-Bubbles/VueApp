@@ -49,7 +49,7 @@
 </script>
 
 <template>
-  <section class="w-75">
+  <div class="content-width">
     <h1 class="mb-3">All Users</h1>
     <SearchAndFilter v-model="filterData" />
     <section v-if="data?.count > 0">
@@ -91,5 +91,5 @@
       />
     </section>
     <UserFormModal v-if="modal" :mode="mode" :data="modalData" v-model="modal" />
-  </section>
+  </div>
 </template>
