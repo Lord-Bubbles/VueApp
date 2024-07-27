@@ -47,7 +47,7 @@
 </script>
 
 <template>
-  <div class="w-50 mx-auto">
+  <div class="profile-wrapper">
     <Form
       @submit="saveData"
       :validation-schema="schema"
@@ -106,3 +106,11 @@
     </Form>
   </div>
 </template>
+
+<style scoped>
+  .profile-wrapper {
+    margin: auto;
+    padding: auto;
+    width: fit-content;
+  }
+</style>
