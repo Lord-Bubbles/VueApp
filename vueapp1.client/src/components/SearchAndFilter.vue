@@ -71,7 +71,7 @@
         @input="(e) => updateQuery(e.target.value, 'name')"
       />
       <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <div class="dropdown z-0">
+      <div class="dropdown">
         <button
           type="button"
           class="ms-3 btn btn-secondary"
