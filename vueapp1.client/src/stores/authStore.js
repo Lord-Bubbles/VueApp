@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
     const data = await response.json();
     user.value = data.user;
     token.value = data.accessToken;
-    await router.replace({ name: 'home', params: { id: data.user.id } });
+    await router.replace({ name: 'home' });
   }
 
   async function logout() {

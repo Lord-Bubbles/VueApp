@@ -45,7 +45,7 @@
                 'link-light': route.name != 'home',
                 'link-info': route.name == 'home'
               }"
-              :to="{ name: 'home', params: { id: user.id } }"
+              :to="{ name: 'home' }"
             >
               <i class="bi bi-house-door me-2"></i>
               <span>Home</span>
@@ -59,7 +59,7 @@
                 'link-light': route.name != 'profile',
                 'link-info': route.name == 'profile'
               }"
-              :to="{ name: 'profile', params: { id: user.id } }"
+              :to="{ name: 'profile' }"
             >
               <i class="bi bi-person-circle me-2"></i>
               <span>Profile</span>
@@ -70,7 +70,6 @@
               class="nav-link text-start text-sm-center text-lg-start"
               :to="{
                 name: 'performance',
-                params: { id: user.id },
                 query: { limit: 20, page: 1, type: 'self' }
               }"
               :class="{
@@ -91,7 +90,7 @@
           >
             <router-link
               class="nav-link text-start text-sm-center text-lg-start"
-              :to="{ name: 'admin', params: { id: user.id }, query: { limit: 20, page: 1 } }"
+              :to="{ name: 'admin', query: { limit: 20, page: 1 } }"
               :class="{
                 active: route.name == 'admin',
                 'link-light': route.name != 'admin',
@@ -110,7 +109,7 @@
           >
             <router-link
               class="nav-link text-start text-sm-center text-lg-start"
-              :to="{ name: 'manager', params: { id: user.id } }"
+              :to="{ name: 'manager' }"
               :class="{
                 active: route.name == 'manager',
                 'link-light': route.name != 'manager',
