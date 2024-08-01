@@ -33,16 +33,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/',
-      children: [
-        {
-          path: '',
-          name: 'login',
-          component: () => import('@/pages/LoginPage.vue'),
-          alias: '/login'
-        },
-        { path: '/signup', name: 'signup', component: () => import('@/pages/RegisterPage.vue') }
-      ],
+      path: '/login',
+      name: 'login',
+      component: () => import('@/pages/LoginPage.vue'),
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: () => import('@/pages/RegisterPage.vue'),
       meta: { requiresAuth: false }
     }
   ]
