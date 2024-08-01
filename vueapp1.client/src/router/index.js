@@ -12,22 +12,26 @@ const router = createRouter({
         {
           path: 'profile',
           name: 'profile',
-          component: () => import('@/pages/ProfilePage.vue')
+          component: () => import('@/pages/ProfilePage.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'performance',
           name: 'performance',
-          component: () => import('@/pages/PerformancePage.vue')
+          component: () => import('@/pages/PerformancePage.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'admin',
           name: 'admin',
-          component: () => import('@/pages/AdminPage.vue')
+          component: () => import('@/pages/AdminPage.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'manager',
           name: 'manager',
-          component: () => import('@/pages/ManagerPage.vue')
+          component: () => import('@/pages/ManagerPage.vue'),
+          meta: { requiresAuth: true }
         }
       ],
       meta: { requiresAuth: true }
