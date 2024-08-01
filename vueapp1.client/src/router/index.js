@@ -57,15 +57,8 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresAuth) {
     if (!authStore.token) {
-      // upon refresh, only get new access/refresh token pair if token state is not valid
-      try {
-        await authStore.refresh();
-      } catch {
-        // Invalid refresh token so redirect to login page
-        return {
-          name: 'login'
-        };
-      }
+      // only get new access/refresh token pair if auth state is null
+      await authStore.refresh();
     }
   }
 });
