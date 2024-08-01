@@ -44,6 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('Error: invalid refresh token!');
       user.value = null;
       token.value = null;
+      await router.replace({ name: 'login' });
       throw new Error();
     }
     const data = await response.json();
